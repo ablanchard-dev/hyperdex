@@ -1,0 +1,46 @@
+# env / secrets — JAMAIS commités
+.env
+.env.local
+*.key
+*.pem
+
+# python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# data — DB / WAL / SHM / backups jamais trackés (leçon polyoracle B-corruption)
+backend/data/*.db
+backend/data/*.db-wal
+backend/data/*.db-shm
+backend/data/_backups/
+
+# logs
+*.log
+backend/*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# runtime paper state — pas tracker car large
+backend/data/paper/positions.jsonl
+backend/data/paper/run.log
+backend/data/paper/launcher.log
+backend/data/paper/fill_backfiller_state.json
+backend/data/paper/wallet_perf.json
+backend/data/paper/muted_wallets.json
+backend/data/paper/_archive/
+
+# raw fills dumps (Phase P1 discovery) — JAMAIS commités (multi-GB)
+backend/data/p1/fills_raw*.json*
+backend/data/p1/fills_raw*.jsonl
