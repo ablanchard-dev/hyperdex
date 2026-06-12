@@ -10,24 +10,43 @@ Logique :
 from __future__ import annotations
 
 import json
+import os
 import statistics
 import time
 from collections import deque
 from pathlib import Path
+from typing import Any
 
 from app.services.copy.sizer import CopySizer
 from app.services.execution import ExchangeClient
 from app.services.paper.pnl_tracker import PnLTracker
 from app.services.paper.position import PaperPosition
+from app.services.paper.wallet_perf import compute_hold_ms_logical
 
 
 HFT_MUTE_OBS_WINDOW = 5         # observations min avant de pouvoir muter
 HFT_MUTE_MEDIAN_MS = 30_000     # median hold < 30s sur fenêtre → HFT non copiable
 HFT_ROLLING_MAXLEN = 20         # taille de la deque par trader
 
+# A4 fix 2026-05-27 : on bufferise les fills WS bruts per-trader pour
+# recompute hold_ms logique (entry→exit) au lieu de delta inter-fills
+# atomiques (qui mesure ~870 ms = la split orderbook d'1 ordre marché).
+# Env `WALLET_PERF_LEGACY_HOLD=true` → conserve l'ancien comportement.
+RAW_FILLS_BUFFER_MAXLEN = 500
+
+
+# Ship 2026-05-27 post méta-audit : coins perdants empiriquement sur 102 closes.
+# PURR -$2.84 (n=2, WR 0%, low lev maint margin 16.67% = liq tighter)
+# STABLE -$1.45 (n=1, WR 0%, low lev similaire)
+# ZEC -$1.22 (n=11, WR 55% mais sum négatif)
+# Total = -$5.51 sur le run = 34% du PnL brut perdu.
+BLOCKED_COINS = {"PURR", "STABLE", "ZEC"}
+
 
 def is_skipped_coin(coin: str) -> bool:
     if not coin:
+        return True
+    if coin in BLOCKED_COINS:
         return True
     c = coin.lower()
     return (c.startswith("xyz:") or c.startswith("@") or
@@ -45,6 +64,7 @@ class CopyOrchestrator:
         verbose: bool = True,
         muted_path: Path | None = None,
         wallet_perf: Any = None,
+        maint_margin_map: dict[str, float] | None = None,
     ) -> None:
         self.exchange = exchange
         self.sizer = sizer
@@ -52,6 +72,13 @@ class CopyOrchestrator:
         self.default_leverage = default_leverage
         self.verbose = verbose
         self.wallet_perf = wallet_perf  # A4 — WalletPerformanceTracker
+        # Fix paper=live parity 2026-05-27 : maint_margin per-coin = (1/maxLev) / 2
+        # Source HL : https://hyperliquid.gitbook.io/hyperliquid-docs/trading/liquidations
+        # Ex BTC maxLev=40 → maint=1.25% / PURR maxLev=3 → maint=16.67%
+        # Avant ce fix : tous les coins utilisaient 5% par défaut → liq_price faux
+        # sur low-lev coins (PURR/VVV/STABLE optimiste 11pts) et high-lev coins
+        # (BTC/ETH pessimiste 3.75pts).
+        self.maint_margin_map = maint_margin_map or {}
         self.stats: dict[str, int] = dict(
             opens_attempted=0, opens_done=0,
             opens_skipped_coin=0, opens_rejected_sizer=0,
@@ -65,6 +92,12 @@ class CopyOrchestrator:
             wallet_perf_mutes=0,
         )
         self._trader_holds: dict[str, deque[int]] = {}
+        # A4 fix : buffer fills WS bruts per-trader pour recompute hold logique.
+        # Clé = trader.lower() ; valeur = deque de fill dicts.
+        self._trader_raw_fills: dict[str, deque[dict[str, Any]]] = {}
+        self._legacy_hold_mode = os.environ.get(
+            "WALLET_PERF_LEGACY_HOLD", "false"
+        ).strip().lower() in ("1", "true", "yes")
         self._muted: dict[str, dict] = {}
         self._muted_path = muted_path
         if muted_path and muted_path.exists():
@@ -91,6 +124,14 @@ class CopyOrchestrator:
                 return
             if not coin or not side or price <= 0 or size <= 0:
                 return
+            # A4 fix : buffer raw fill (avant skip_coin) pour hold logique.
+            # On bufferise même les coins skipped — la médiane porte sur tous
+            # les fills observés du trader (signal HFT global, pas per-coin).
+            if not self._legacy_hold_mode:
+                key = trader_addr.lower()
+                dq = self._trader_raw_fills.setdefault(
+                    key, deque(maxlen=RAW_FILLS_BUFFER_MAXLEN))
+                dq.append(fill)
             if is_skipped_coin(coin):
                 if "open" in dir_str:
                     self.stats["opens_skipped_coin"] += 1
@@ -166,12 +207,14 @@ class CopyOrchestrator:
                       f"err={fill_result.error}")
             return
 
-        # build position
+        # build position avec maint_margin per-coin (fix paper=live 2026-05-27)
+        maint = self.maint_margin_map.get(coin, 0.05)  # 5% fallback safe
         position = PaperPosition(
             trader=trader.lower(), coin=coin, is_long=side_is_long,
             size=fill_result.size, entry_price=fill_result.avg_price,
             leverage=fill_result.leverage, open_ts_ms=fill_result.ts_ms,
             open_fee_usd=fill_result.fee_usd, open_fill_id=fill_result.fill_id,
+            maint_margin_pct=maint,
         )
         opened = self.tracker.open(position)
         if opened:
@@ -242,17 +285,39 @@ class CopyOrchestrator:
     # ---- anti-HFT runtime ----
 
     def _observe_hold(self, trader: str, hold_ms: int):
+        """Observe un hold_ms post-close.
+
+        - Legacy mode : append `hold_ms` brut, check mute si médiane <30s.
+          Problème : le delta `exit_ts_ms - open_ts_ms` du paper-tracker se
+          réinitialise à chaque fill atomique d'un ordre marché HL splittant
+          l'orderbook (cf header wallet_perf.py).
+        - Default mode (`WALLET_PERF_LEGACY_HOLD=false`) : recompute la médiane
+          via `compute_hold_ms_logical()` sur le buffer fills WS bruts, qui
+          agrège les fragments d'un même ordre via passage flat→non-flat.
+        """
         key = trader.lower()
         if key in self._muted:
             return
         dq = self._trader_holds.setdefault(
             key, deque(maxlen=HFT_ROLLING_MAXLEN))
         dq.append(hold_ms)
-        if len(dq) < HFT_MUTE_OBS_WINDOW:
+        if self._legacy_hold_mode:
+            if len(dq) < HFT_MUTE_OBS_WINDOW:
+                return
+            med = statistics.median(dq)
+            if med < HFT_MUTE_MEDIAN_MS:
+                self._mute_trader(key, med, len(dq), reason="hft_runtime")
             return
-        med = statistics.median(dq)
+        # New mode : utilise fills bruts pour calcul logique.
+        raw_fills = list(self._trader_raw_fills.get(key, ()))
+        closures = compute_hold_ms_logical(raw_fills)
+        if len(closures) < HFT_MUTE_OBS_WINDOW:
+            return
+        holds = sorted(c["hold_ms"] for c in closures)
+        med = holds[len(holds) // 2]
         if med < HFT_MUTE_MEDIAN_MS:
-            self._mute_trader(key, med, len(dq), reason="hft_runtime")
+            self._mute_trader(key, med, len(closures),
+                              reason="hft_runtime_logical")
 
     def _mute_trader(self, trader: str, median_hold_ms: float, n_obs: int,
                       reason: str):
@@ -281,7 +346,16 @@ class CopyOrchestrator:
     def bootstrap_holds_from_jsonl(self, log_path: Path):
         """Bootstrap depuis le positions.jsonl : pré-remplit les rolling deques
         + déclenche mute pour les wallets HFT déjà observés. Idempotent.
+
+        A4 fix : si `WALLET_PERF_LEGACY_HOLD=false` (défaut), on SKIP le replay
+        des hold_ms du JSONL car ces valeurs ont été calculées avec le bug
+        delta-inter-fills-atomiques (donc ~870 ms pour les scalpers HYPE).
+        Le hold logique sera reconstruit live depuis les fills WS bruts.
         """
+        if not self._legacy_hold_mode:
+            self._log("BOOTSTRAP hold_logical=ON → skip replay JSONL holds "
+                      "(legacy values buggy, will rebuild from WS fills)")
+            return
         if not log_path.exists():
             return
         n_close = 0

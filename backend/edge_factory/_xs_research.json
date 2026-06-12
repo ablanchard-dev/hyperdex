@@ -1,0 +1,410 @@
+[
+  {
+    "hypothesis": {
+      "name": "xsm_120_0.33",
+      "rationale": "12m momentum factor",
+      "signal": {
+        "type": "xs_momentum",
+        "params": {
+          "lookback": 120,
+          "top_frac": 0.33
+        }
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.000388,
+        "beta": 0.0968,
+        "t_alpha": -0.443,
+        "n": 150
+      },
+      "dsr": 0.2726,
+      "sharpe": -0.0255,
+      "pbo": null
+    },
+    "train_sharpe": 0.0288,
+    "n_trials": 4,
+    "venue": "equities_xs"
+  },
+  {
+    "hypothesis": {
+      "name": "xs_reversion_20_0.33",
+      "rationale": "xs",
+      "signal": {
+        "type": "xs_reversion",
+        "params": {
+          "lookback": 20,
+          "top_frac": 0.33
+        }
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 0.003408,
+        "beta": -0.2678,
+        "t_alpha": 1.606,
+        "n": 150
+      },
+      "dsr": 0.7252,
+      "sharpe": 0.1188,
+      "pbo": null
+    },
+    "train_sharpe": -0.0486,
+    "n_trials": 12,
+    "venue": "equities_xs"
+  },
+  {
+    "hypothesis": {
+      "name": "xsm_60_0.2",
+      "rationale": "12m momentum factor",
+      "signal": {
+        "type": "xs_momentum",
+        "params": {
+          "lookback": 60,
+          "top_frac": 0.2
+        }
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.000576,
+        "beta": 0.2295,
+        "t_alpha": -0.368,
+        "n": 150
+      },
+      "dsr": 0.3163,
+      "sharpe": -0.0157,
+      "pbo": null
+    },
+    "train_sharpe": 0.0458,
+    "n_trials": 4,
+    "venue": "equities_xs"
+  },
+  {
+    "hypothesis": {
+      "name": "xsm_120_0.2",
+      "rationale": "12m momentum factor",
+      "signal": {
+        "type": "xs_momentum",
+        "params": {
+          "lookback": 120,
+          "top_frac": 0.2
+        }
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.000389,
+        "beta": 0.1719,
+        "t_alpha": -0.292,
+        "n": 150
+      },
+      "dsr": 0.3343,
+      "sharpe": -0.0113,
+      "pbo": null
+    },
+    "train_sharpe": 0.0333,
+    "n_trials": 4,
+    "venue": "equities_xs"
+  },
+  {
+    "hypothesis": {
+      "name": "xsm_60_0.33",
+      "rationale": "12m momentum factor",
+      "signal": {
+        "type": "xs_momentum",
+        "params": {
+          "lookback": 60,
+          "top_frac": 0.33
+        }
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 0.000267,
+        "beta": 0.1423,
+        "t_alpha": 0.22,
+        "n": 150
+      },
+      "dsr": 0.5293,
+      "sharpe": 0.0294,
+      "pbo": null
+    },
+    "train_sharpe": -0.0133,
+    "n_trials": 4,
+    "venue": "equities_xs"
+  },
+  {
+    "hypothesis": {
+      "name": "xs_reversion_20_0.2",
+      "rationale": "xs",
+      "signal": {
+        "type": "xs_reversion",
+        "params": {
+          "lookback": 20,
+          "top_frac": 0.2
+        }
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 0.002998,
+        "beta": -0.4168,
+        "t_alpha": 1.122,
+        "n": 150
+      },
+      "dsr": 0.5409,
+      "sharpe": 0.0761,
+      "pbo": null
+    },
+    "train_sharpe": -0.0795,
+    "n_trials": 12,
+    "venue": "equities_xs"
+  },
+  {
+    "hypothesis": {
+      "name": "xs_momentum_20_0.2",
+      "rationale": "xs",
+      "signal": {
+        "type": "xs_momentum",
+        "params": {
+          "lookback": 20,
+          "top_frac": 0.2
+        }
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.003605,
+        "beta": 0.4115,
+        "t_alpha": -1.351,
+        "n": 150
+      },
+      "dsr": 0.0287,
+      "sharpe": -0.0948,
+      "pbo": null
+    },
+    "train_sharpe": 0.0664,
+    "n_trials": 12,
+    "venue": "equities_xs"
+  },
+  {
+    "hypothesis": {
+      "name": "xs_reversion_60_0.33",
+      "rationale": "xs",
+      "signal": {
+        "type": "xs_reversion",
+        "params": {
+          "lookback": 60,
+          "top_frac": 0.33
+        }
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.001677,
+        "beta": -0.4756,
+        "t_alpha": -0.84,
+        "n": 150
+      },
+      "dsr": 0.0244,
+      "sharpe": -0.0899,
+      "pbo": null
+    },
+    "train_sharpe": 0.013,
+    "n_trials": 12,
+    "venue": "equities_xs"
+  },
+  {
+    "hypothesis": {
+      "name": "xs_reversion_120_0.2",
+      "rationale": "xs",
+      "signal": {
+        "type": "xs_reversion",
+        "params": {
+          "lookback": 120,
+          "top_frac": 0.2
+        }
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.001812,
+        "beta": -0.2092,
+        "t_alpha": -1.115,
+        "n": 150
+      },
+      "dsr": 0.0177,
+      "sharpe": -0.1035,
+      "pbo": null
+    },
+    "train_sharpe": -0.0402,
+    "n_trials": 12,
+    "venue": "equities_xs"
+  },
+  {
+    "hypothesis": {
+      "name": "xs_reversion_60_0.2",
+      "rationale": "xs",
+      "signal": {
+        "type": "xs_reversion",
+        "params": {
+          "lookback": 60,
+          "top_frac": 0.2
+        }
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.003005,
+        "beta": -0.5491,
+        "t_alpha": -1.208,
+        "n": 150
+      },
+      "dsr": 0.0096,
+      "sharpe": -0.1182,
+      "pbo": null
+    },
+    "train_sharpe": -0.0319,
+    "n_trials": 12,
+    "venue": "equities_xs"
+  },
+  {
+    "hypothesis": {
+      "name": "xs_momentum_20_0.33",
+      "rationale": "xs",
+      "signal": {
+        "type": "xs_momentum",
+        "params": {
+          "lookback": 20,
+          "top_frac": 0.33
+        }
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.003908,
+        "beta": 0.2666,
+        "t_alpha": -1.842,
+        "n": 150
+      },
+      "dsr": 0.0088,
+      "sharpe": -0.1381,
+      "pbo": null
+    },
+    "train_sharpe": 0.0364,
+    "n_trials": 12,
+    "venue": "equities_xs"
+  },
+  {
+    "hypothesis": {
+      "name": "xs_reversion_120_0.33",
+      "rationale": "xs",
+      "signal": {
+        "type": "xs_reversion",
+        "params": {
+          "lookback": 120,
+          "top_frac": 0.33
+        }
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.001833,
+        "beta": -0.1623,
+        "t_alpha": -1.701,
+        "n": 150
+      },
+      "dsr": 0.0011,
+      "sharpe": -0.153,
+      "pbo": null
+    },
+    "train_sharpe": -0.0162,
+    "n_trials": 12,
+    "venue": "equities_xs"
+  }
+]

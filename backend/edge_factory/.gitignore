@@ -1,0 +1,13 @@
+# data lourde Numerai (700M+, re-téléchargeable via numerapi) — jamais trackée
+numerai_data/
+*.parquet
+# data liquidations enregistrée
+*.jsonl
+liq_binance.jsonl
+# secrets — JAMAIS commit (clé API vit dans ~/.coinalyze_key chmod 600)
+*.key
+.coinalyze_key
+# python
+__pycache__/
+*.pyc
+.council/

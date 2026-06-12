@@ -12,6 +12,7 @@ from typing import Any
 import httpx
 from hyperliquid.info import Info
 from hyperliquid.utils import constants
+from hyperliquid.utils.error import ClientError
 
 LEADERBOARD_URL = "https://stats-data.hyperliquid.xyz/Mainnet/leaderboard"
 DEFAULT_MIN_INTERVAL_S = 1.5  # ~40 req/min en info = 800 poids/min, sous 1200/min
@@ -65,3 +66,46 @@ class InfoClient:
     def user_state(self, address: str) -> dict[str, Any]:
         self._pace()
         return self._info.user_state(address)
+
+    def _retry_429(self, fn, *args, attempts: int = 6) -> Any:
+        """Appel pacé + backoff exponentiel sur 429 (rate limit HL)."""
+        for i in range(attempts):
+            self._pace()
+            try:
+                return fn(*args)
+            except ClientError as e:
+                if getattr(e, "status_code", None) == 429 and i < attempts - 1:
+                    time.sleep(min(30, 2 ** i))  # 1,2,4,8,16,30s
+                    continue
+                raise
+
+    def meta_and_asset_ctxs(self) -> Any:
+        """[meta, ctxs] : universe perp + contexte par asset (dayNtlVlm, OI…)."""
+        return self._retry_429(self._info.meta_and_asset_ctxs)
+
+    def candles(self, name: str, interval: str,
+                start_ms: int, end_ms: int) -> list[dict[str, Any]]:
+        """Candles OHLCV (clés T/t/o/h/l/c/v en strings) pour un coin."""
+        return self._retry_429(
+            self._info.candles_snapshot, name, interval, start_ms, end_ms)
+
+    def funding_history(self, name: str, start_ms: int,
+                        end_ms: int | None = None) -> list[dict[str, Any]]:
+        """Historique de funding (clés coin/fundingRate/premium/time) pour un coin."""
+        return self._retry_429(self._info.funding_history, name, start_ms, end_ms)
+
+    def funding_history_paged(self, name: str, start_ms: int, end_ms: int,
+                              max_pages: int = 12) -> list[dict[str, Any]]:
+        """funding_history paginé (HL cape ~500 pts/call, renvoie depuis start)."""
+        out: list[dict[str, Any]] = []
+        cur = start_ms
+        for _ in range(max_pages):
+            batch = self.funding_history(name, cur, end_ms)
+            if not batch:
+                break
+            out.extend(batch)
+            last = max(int(x["time"]) for x in batch)
+            if len(batch) < 500 or last >= end_ms or last <= cur:
+                break
+            cur = last + 1
+        return out

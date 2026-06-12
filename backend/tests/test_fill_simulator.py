@@ -140,7 +140,9 @@ def test_malformed_level_skipped():
 
 def test_simulate_success_fresh_book():
     sim = FillSimulator(fee_rate=0.001, max_book_age_s=5.0)
-    book = make_book(asks=[(100.0, 2.0)], bids=[(99.0, 2.0)], age_ms=100)
+    # ≥2 niveaux/côté requis par depth guard A5 (MIN_BOOK_LEVELS=2)
+    book = make_book(asks=[(100.0, 2.0), (101.0, 2.0)],
+                     bids=[(99.0, 2.0), (98.0, 2.0)], age_ms=100)
     f = sim.simulate(book, "B", 1.0)
     assert f.success
     assert f.vwap == 100.0
@@ -164,15 +166,81 @@ def test_simulate_empty_book_rejected():
     book = {"levels": [[], []], "time": int(time.time()*1000)}
     f = sim.simulate(book, "B", 0.5)
     assert not f.success
-    assert "nul" in (f.error or "").lower() or "vide" in (f.error or "").lower()
+    e = (f.error or "").lower()
+    assert "nul" in e or "vide" in e or "depth" in e  # depth guard A5
 
 
 def test_simulate_fee_rate_zero():
     sim = FillSimulator(fee_rate=0.0)
-    book = make_book(asks=[(100, 1)], bids=[(99, 1)])
+    book = make_book(asks=[(100, 1), (101, 1)], bids=[(99, 1), (98, 1)])
     f = sim.simulate(book, "B", 0.5)
     assert f.success
     assert f.fee_usd == 0.0
+
+
+# ====== simulate_maker() — post-only ======
+
+def test_maker_buy_posts_at_best_bid():
+    """BUY maker → fill au best bid (pas au ask traversé)."""
+    sim = FillSimulator(maker_fee_rate=0.0001, max_book_age_s=5.0)
+    book = make_book(asks=[(100.0, 2.0)], bids=[(99.0, 2.0)], age_ms=100)
+    f = sim.simulate_maker(book, "B", 1.0)
+    assert f.success
+    assert f.is_maker is True
+    assert f.conditional is True  # fill non garanti
+    assert f.vwap == 99.0, f"maker buy doit poster au best bid 99, got {f.vwap}"
+    assert abs(f.notional_usd - 99.0) < 1e-6
+    assert abs(f.fee_usd - 99.0 * 0.0001) < 1e-9
+
+
+def test_maker_sell_posts_at_best_ask():
+    """SELL maker → fill au best ask."""
+    sim = FillSimulator(maker_fee_rate=0.0001, max_book_age_s=5.0)
+    book = make_book(asks=[(101.0, 2.0)], bids=[(100.0, 2.0)], age_ms=100)
+    f = sim.simulate_maker(book, "A", 1.0)
+    assert f.success
+    assert f.vwap == 101.0, f"maker sell doit poster au best ask 101, got {f.vwap}"
+
+
+def test_maker_cheaper_than_taker():
+    """Maker doit donner un meilleur prix ET une fee plus basse que taker."""
+    sim = FillSimulator(fee_rate=0.00045, maker_fee_rate=0.00015,
+                        max_book_age_s=5.0)
+    book = make_book(asks=[(100.0, 2.0), (101.0, 2.0)],
+                     bids=[(99.0, 2.0), (98.0, 2.0)], age_ms=100)
+    taker = sim.simulate(book, "B", 1.0)
+    maker = sim.simulate_maker(book, "B", 1.0)
+    # BUY : taker paie 100 (ask), maker poste à 99 (bid) → meilleur prix
+    assert maker.vwap < taker.vwap
+    # fee maker < fee taker
+    assert maker.fee_usd < taker.fee_usd
+
+
+def test_maker_stale_book_rejected():
+    sim = FillSimulator(max_book_age_s=1.0)
+    book = make_book(asks=[(100, 1)], bids=[(99, 1)], age_ms=2000)
+    f = sim.simulate_maker(book, "B", 0.5)
+    assert not f.success
+    assert "stale" in (f.error or "").lower()
+    assert f.is_maker is True
+
+
+def test_maker_empty_side_rejected():
+    sim = FillSimulator(max_book_age_s=5.0)
+    book = {"levels": [[], [{"px": "100", "sz": "1", "n": 1}]],
+            "time": int(time.time() * 1000)}
+    f = sim.simulate_maker(book, "B", 0.5)  # BUY mais pas de bids
+    assert not f.success
+    assert "touch" in (f.error or "").lower()
+
+
+def test_best_touch_values():
+    sim = FillSimulator()
+    book = make_book(asks=[(101.0, 1.0), (102.0, 1.0)],
+                     bids=[(100.0, 1.0), (99.0, 1.0)])
+    assert sim.best_touch(book, "B") == 100.0  # best bid
+    assert sim.best_touch(book, "A") == 101.0  # best ask
+    assert sim.best_touch(book, "X") == 0.0
 
 
 if __name__ == "__main__":
