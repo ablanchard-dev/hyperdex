@@ -44,3 +44,4 @@ backend/data/paper/_archive/
 # raw fills dumps (Phase P1 discovery) — JAMAIS commités (multi-GB)
 backend/data/p1/fills_raw*.json*
 backend/data/p1/fills_raw*.jsonl
+backend/data/
