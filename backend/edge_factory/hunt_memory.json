@@ -1,0 +1,1480 @@
+[
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "xs_momentum_lb6"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -2.5e-05,
+        "beta": -0.1062,
+        "t_alpha": -0.068,
+        "n": 431
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0006,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -7.637701,
+        "t_gamma": -0.661,
+        "n": 431
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "xs_momentum_lb12"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 0.00011,
+        "beta": -0.0503,
+        "t_alpha": 0.286,
+        "n": 431
+      },
+      "dsr": 0.0,
+      "sharpe": 0.0151,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -2.680945,
+        "t_gamma": -0.225,
+        "n": 431
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "xs_momentum_lb24"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 0.000423,
+        "beta": -0.074,
+        "t_alpha": 1.118,
+        "n": 431
+      },
+      "dsr": 0.0,
+      "sharpe": 0.0558,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -16.952332,
+        "t_gamma": -1.451,
+        "n": 431
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "xs_reversion_lb6"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.000857,
+        "beta": 0.1081,
+        "t_alpha": -2.291,
+        "n": 431
+      },
+      "dsr": 0.0,
+      "sharpe": -0.1133,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": 7.285473,
+        "t_gamma": 0.63,
+        "n": 431
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "xs_reversion_lb12"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.000752,
+        "beta": 0.0468,
+        "t_alpha": -1.951,
+        "n": 431
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0954,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": 1.329442,
+        "t_gamma": 0.111,
+        "n": 431
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "xs_reversion_lb24"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.000895,
+        "beta": 0.0723,
+        "t_alpha": -2.371,
+        "n": 431
+      },
+      "dsr": 0.0,
+      "sharpe": -0.1163,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": 15.864561,
+        "t_gamma": 1.362,
+        "n": 431
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "lead_lag_lb1"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.002406,
+        "beta": 0.2211,
+        "t_alpha": -5.578,
+        "n": 431
+      },
+      "dsr": 0.0,
+      "sharpe": -0.2734,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": 19.793028,
+        "t_gamma": 1.487,
+        "n": 431
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "lead_lag_lb2"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.001359,
+        "beta": 0.106,
+        "t_alpha": -3.229,
+        "n": 431
+      },
+      "dsr": 0.0,
+      "sharpe": -0.1583,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": 29.124486,
+        "t_gamma": 2.25,
+        "n": 431
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "lead_lag_lb3"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.001148,
+        "beta": -0.0182,
+        "t_alpha": -2.661,
+        "n": 431
+      },
+      "dsr": 0.0,
+      "sharpe": -0.1281,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": 23.240249,
+        "t_gamma": 1.747,
+        "n": 431
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "funding_carry"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 6e-06,
+        "beta": -0.0004,
+        "t_alpha": 1.939,
+        "n": 431
+      },
+      "dsr": 0.0,
+      "sharpe": 0.095,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -0.06426,
+        "t_gamma": -0.7,
+        "n": 431
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_BTC"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -4.3e-05,
+        "beta": -0.0016,
+        "t_alpha": -1.347,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0356,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -1.168989,
+        "t_gamma": -1.354,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_HYPE"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.000103,
+        "beta": -0.0045,
+        "t_alpha": -1.552,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0418,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -0.164768,
+        "t_gamma": -0.412,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_ETH"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr",
+      "convexity_risk"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -1.2e-05,
+        "beta": 0.0034,
+        "t_alpha": -0.36,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0095,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": false,
+        "reason": "convexity_risk",
+        "gamma": -1.298352,
+        "t_gamma": -3.232,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_ZEC"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr",
+      "convexity_risk"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.000182,
+        "beta": -0.0257,
+        "t_alpha": -1.878,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0538,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": false,
+        "reason": "convexity_risk",
+        "gamma": -1.098449,
+        "t_gamma": -5.827,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_SOL"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -7.3e-05,
+        "beta": 0.0025,
+        "t_alpha": -1.821,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.048,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -0.122098,
+        "t_gamma": -0.215,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_NEAR"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr",
+      "convexity_risk"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 4.3e-05,
+        "beta": -0.0087,
+        "t_alpha": 0.657,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": 0.0156,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": false,
+        "reason": "convexity_risk",
+        "gamma": -0.553506,
+        "t_gamma": -2.317,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_BNB"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr",
+      "convexity_risk"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -4.1e-05,
+        "beta": -0.0261,
+        "t_alpha": -1.197,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0341,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": false,
+        "reason": "convexity_risk",
+        "gamma": -3.193353,
+        "t_gamma": -3.361,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_ASTER"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 0.0,
+        "beta": -0.01,
+        "t_alpha": 0.003,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0005,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -0.100683,
+        "t_gamma": -0.238,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_XRP"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -5.7e-05,
+        "beta": -0.0056,
+        "t_alpha": -1.542,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0407,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -1.09207,
+        "t_gamma": -1.641,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_LIT"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 0.000117,
+        "beta": 0.0163,
+        "t_alpha": 1.132,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": 0.0317,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": 0.337261,
+        "t_gamma": 1.535,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_WLD"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -8e-05,
+        "beta": 0.0007,
+        "t_alpha": -1.037,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0273,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -0.115153,
+        "t_gamma": -0.485,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_XLM"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -8e-06,
+        "beta": 0.0063,
+        "t_alpha": -0.073,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0015,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -0.235956,
+        "t_gamma": -1.015,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_TON"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 0.000162,
+        "beta": -0.0108,
+        "t_alpha": 1.418,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": 0.0365,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": 1.062911,
+        "t_gamma": 3.482,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_XMR"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -1e-05,
+        "beta": -0.0055,
+        "t_alpha": -0.172,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0048,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -0.296891,
+        "t_gamma": -0.87,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_VVV"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 4e-05,
+        "beta": -0.0028,
+        "t_alpha": 0.294,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": 0.0073,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -0.399822,
+        "t_gamma": -1.64,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_SUI"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr",
+      "convexity_risk"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -9e-05,
+        "beta": -0.0308,
+        "t_alpha": -1.409,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0377,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": false,
+        "reason": "convexity_risk",
+        "gamma": -1.493866,
+        "t_gamma": -5.073,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "liq_spike_ONDO"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 1.3e-05,
+        "beta": 0.0002,
+        "t_alpha": 0.195,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": 0.0052,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": 0.135219,
+        "t_gamma": 0.764,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "oi_div_BTC"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -8.2e-05,
+        "beta": 0.0019,
+        "t_alpha": -2.121,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0559,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -0.778735,
+        "t_gamma": -0.741,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "oi_div_HYPE"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr",
+      "convexity_risk"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -1.8e-05,
+        "beta": -0.0042,
+        "t_alpha": -0.965,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0282,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": false,
+        "reason": "convexity_risk",
+        "gamma": -0.236867,
+        "t_gamma": -2.075,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "oi_div_ETH"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -2.7e-05,
+        "beta": -0.003,
+        "t_alpha": -0.759,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.02,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -0.274244,
+        "t_gamma": -0.658,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "oi_div_ZEC"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 6.2e-05,
+        "beta": 0.0227,
+        "t_alpha": 1.038,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": 0.0334,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": 0.698867,
+        "t_gamma": 5.973,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "oi_div_SOL"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.000101,
+        "beta": 0.0058,
+        "t_alpha": -2.746,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0724,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -0.086901,
+        "t_gamma": -0.167,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "oi_div_NEAR"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -4.8e-05,
+        "beta": -0.0023,
+        "t_alpha": -1.382,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0374,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": 0.166372,
+        "t_gamma": 1.328,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "oi_div_XRP"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -8.9e-05,
+        "beta": -0.0079,
+        "t_alpha": -1.998,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0527,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": 0.607255,
+        "t_gamma": 0.761,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "oi_div_LIT"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr",
+      "convexity_risk"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -4.8e-05,
+        "beta": -0.011,
+        "t_alpha": -1.069,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0309,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": false,
+        "reason": "convexity_risk",
+        "gamma": -0.304501,
+        "t_gamma": -3.162,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "oi_div_WLD"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -9.4e-05,
+        "beta": 0.0093,
+        "t_alpha": -1.322,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0341,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -0.38417,
+        "t_gamma": -1.751,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "oi_div_XLM"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 6e-06,
+        "beta": -0.0152,
+        "t_alpha": 0.088,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": 0.0007,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": 0.201934,
+        "t_gamma": 1.359,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "oi_div_TON"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr",
+      "convexity_risk"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.000208,
+        "beta": -0.0069,
+        "t_alpha": -2.425,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0647,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": false,
+        "reason": "convexity_risk",
+        "gamma": -0.885532,
+        "t_gamma": -3.87,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "oi_div_XMR"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 2e-05,
+        "beta": -0.0042,
+        "t_alpha": 0.667,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": 0.0172,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": -0.292319,
+        "t_gamma": -1.565,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "oi_div_VVV"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 5.6e-05,
+        "beta": -0.006,
+        "t_alpha": 0.614,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": 0.0148,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": 0.17056,
+        "t_gamma": 1.034,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "oi_div_SUI"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -4.6e-05,
+        "beta": 0.0152,
+        "t_alpha": -0.738,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0191,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": 0.739736,
+        "t_gamma": 2.53,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  },
+  {
+    "hypothesis": {
+      "signal": {
+        "type": "oi_div_ONDO"
+      }
+    },
+    "venue": "hunt",
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -1.2e-05,
+        "beta": 0.0024,
+        "t_alpha": -0.216,
+        "n": 1439
+      },
+      "dsr": 0.0,
+      "sharpe": -0.0054,
+      "pbo": null,
+      "permutation": null,
+      "convexity": {
+        "pass": true,
+        "reason": "ok",
+        "gamma": 0.068555,
+        "t_gamma": 0.465,
+        "n": 1439
+      },
+      "effective_n_trials": 42
+    }
+  }
+]

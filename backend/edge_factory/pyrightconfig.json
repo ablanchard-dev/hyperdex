@@ -1,0 +1,10 @@
+{
+  "venvPath": "/opt/app/hyperdex",
+  "venv": ".venv",
+  "extraPaths": [
+    "/opt/app/hyperdex/backend",
+    "/opt/app/hyperdex/backend/scripts/p2"
+  ],
+  "exclude": ["numerai_data", "**/__pycache__"],
+  "reportMissingImports": "warning"
+}

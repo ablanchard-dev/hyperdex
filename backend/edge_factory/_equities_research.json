@@ -1,0 +1,350 @@
+[
+  {
+    "hypothesis": {
+      "family": "momentum",
+      "params": {
+        "lookback": 5
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 0.001403,
+        "beta": -0.6103,
+        "t_alpha": 0.802,
+        "n": 150
+      },
+      "dsr": 0.2762,
+      "sharpe": 0.0299,
+      "pbo": null
+    },
+    "train_sharpe": -0.0193,
+    "n_trials": 12,
+    "venue": "equities"
+  },
+  {
+    "hypothesis": {
+      "family": "momentum",
+      "params": {
+        "lookback": 10
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 0.000954,
+        "beta": -0.4639,
+        "t_alpha": 0.6,
+        "n": 150
+      },
+      "dsr": 0.2368,
+      "sharpe": 0.0198,
+      "pbo": null
+    },
+    "train_sharpe": 0.0132,
+    "n_trials": 12,
+    "venue": "equities"
+  },
+  {
+    "hypothesis": {
+      "family": "momentum",
+      "params": {
+        "lookback": 20
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 0.000805,
+        "beta": -0.544,
+        "t_alpha": 0.543,
+        "n": 150
+      },
+      "dsr": 0.1942,
+      "sharpe": 0.0081,
+      "pbo": null
+    },
+    "train_sharpe": 0.0688,
+    "n_trials": 12,
+    "venue": "equities"
+  },
+  {
+    "hypothesis": {
+      "family": "momentum",
+      "params": {
+        "lookback": 40
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 0.001525,
+        "beta": -0.4894,
+        "t_alpha": 1.108,
+        "n": 150
+      },
+      "dsr": 0.3767,
+      "sharpe": 0.0528,
+      "pbo": null
+    },
+    "train_sharpe": 0.0785,
+    "n_trials": 12,
+    "venue": "equities"
+  },
+  {
+    "hypothesis": {
+      "family": "mean_reversion",
+      "params": {
+        "lookback": 5
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.00205,
+        "beta": 0.6143,
+        "t_alpha": -1.171,
+        "n": 150
+      },
+      "dsr": 0.0493,
+      "sharpe": -0.0582,
+      "pbo": null
+    },
+    "train_sharpe": -0.0118,
+    "n_trials": 12,
+    "venue": "equities"
+  },
+  {
+    "hypothesis": {
+      "family": "mean_reversion",
+      "params": {
+        "lookback": 10
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.001411,
+        "beta": 0.4609,
+        "t_alpha": -0.887,
+        "n": 150
+      },
+      "dsr": 0.071,
+      "sharpe": -0.0427,
+      "pbo": null
+    },
+    "train_sharpe": -0.034,
+    "n_trials": 12,
+    "venue": "equities"
+  },
+  {
+    "hypothesis": {
+      "family": "mean_reversion",
+      "params": {
+        "lookback": 20
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.001117,
+        "beta": 0.5442,
+        "t_alpha": -0.752,
+        "n": 150
+      },
+      "dsr": 0.1052,
+      "sharpe": -0.0242,
+      "pbo": null
+    },
+    "train_sharpe": -0.0825,
+    "n_trials": 12,
+    "venue": "equities"
+  },
+  {
+    "hypothesis": {
+      "family": "mean_reversion",
+      "params": {
+        "lookback": 40
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": -0.001676,
+        "beta": 0.4884,
+        "t_alpha": -1.219,
+        "n": 150
+      },
+      "dsr": 0.0451,
+      "sharpe": -0.0615,
+      "pbo": null
+    },
+    "train_sharpe": -0.0873,
+    "n_trials": 12,
+    "venue": "equities"
+  },
+  {
+    "hypothesis": {
+      "family": "breakout",
+      "params": {
+        "lookback": 5
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 0.000152,
+        "beta": -0.4187,
+        "t_alpha": 0.111,
+        "n": 150
+      },
+      "dsr": 0.1121,
+      "sharpe": -0.0199,
+      "pbo": null
+    },
+    "train_sharpe": -0.0206,
+    "n_trials": 12,
+    "venue": "equities"
+  },
+  {
+    "hypothesis": {
+      "family": "breakout",
+      "params": {
+        "lookback": 10
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 4.4e-05,
+        "beta": -0.3617,
+        "t_alpha": 0.038,
+        "n": 150
+      },
+      "dsr": 0.096,
+      "sharpe": -0.0262,
+      "pbo": null
+    },
+    "train_sharpe": 0.0069,
+    "n_trials": 12,
+    "venue": "equities"
+  },
+  {
+    "hypothesis": {
+      "family": "breakout",
+      "params": {
+        "lookback": 20
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 0.000114,
+        "beta": -0.3231,
+        "t_alpha": 0.118,
+        "n": 150
+      },
+      "dsr": 0.1044,
+      "sharpe": -0.022,
+      "pbo": null
+    },
+    "train_sharpe": -0.0074,
+    "n_trials": 12,
+    "venue": "equities"
+  },
+  {
+    "hypothesis": {
+      "family": "breakout",
+      "params": {
+        "lookback": 40
+      }
+    },
+    "pass": false,
+    "reasons": [
+      "beta_deguise",
+      "dsr"
+    ],
+    "gates": {
+      "beta_neutral": {
+        "pass": false,
+        "reason": "beta_deguise",
+        "alpha": 0.000365,
+        "beta": -0.2613,
+        "t_alpha": 0.474,
+        "n": 150
+      },
+      "dsr": 0.1874,
+      "sharpe": 0.0053,
+      "pbo": null
+    },
+    "train_sharpe": -0.0123,
+    "n_trials": 12,
+    "venue": "equities"
+  }
+]

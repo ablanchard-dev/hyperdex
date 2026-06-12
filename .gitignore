@@ -45,3 +45,7 @@ backend/data/paper/_archive/
 backend/data/p1/fills_raw*.json*
 backend/data/p1/fills_raw*.jsonl
 backend/data/
+
+# edge_factory datasets (jamais publiés)
+backend/edge_factory/numerai_data/
+*.parquet

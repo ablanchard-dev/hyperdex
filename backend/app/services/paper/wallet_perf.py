@@ -14,14 +14,137 @@ Stat : élimination alpha decay individuel (un wallet validé Bonferroni
 peut perdre son edge avec le temps). Filtre observabilité-driven.
 
 Persistence : JSON dans data/paper/wallet_perf.json (similaire muted_wallets.json).
+
+---
+
+A4 hold-logical fix (2026-05-27) :
+
+Le calcul naïf de hold_ms (delta `exit_ts_ms - open_ts_ms` sur la 1ʳᵉ paire
+fill atomique d'open/close du paper-tracker) a faussement muté des top
+scalpers HYPE comme HFT < 30 s. Cause : un ordre HL marché traverse N
+niveaux d'orderbook → N fills atomiques avec même `oid` et `time` ≈ identique
+(<1 s entre les N events WS) ; le paper-tracker ouvre puis ferme la position
+à chaque fill, produisant des hold_ms artificiels ~800-1000 ms.
+
+`compute_hold_ms_logical()` ci-dessous agrège les fills atomiques d'un même
+ordre/position et mesure le hold ENTRY→EXIT logique. Source schema HL fills
+( `oid`, `time`, `sz`, `side`, `coin`) :
+https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint#retrieve-a-users-fills
+
+Mode legacy disponible via env flag `WALLET_PERF_LEGACY_HOLD=true` pour
+rollback rapide (défaut false = nouvelle logique).
 """
 from __future__ import annotations
 
 import json
+import os
 import time
 from collections import deque
 from pathlib import Path
 from typing import Any
+
+
+# ---------------------------------------------------------------------------
+# Hold-logical helpers (A4 fix 2026-05-27)
+# ---------------------------------------------------------------------------
+
+# Si 2 fills consécutifs same (coin, side) sont espacés de < INTRA_ORDER_WINDOW_MS
+# on considère qu'ils appartiennent au même ordre HL marché (split orderbook).
+INTRA_ORDER_WINDOW_MS = 2000
+
+
+def compute_hold_ms_logical(
+    fills: list[dict[str, Any]],
+    intra_window_ms: int = INTRA_ORDER_WINDOW_MS,
+) -> list[dict[str, Any]]:
+    """Agrège fills atomiques d'un même ordre/position, mesure hold ENTRY→EXIT.
+
+    Strategy :
+    1. Tri ascending par `time` (HL renvoie reverse-chrono via userFills).
+    2. Tracker position state per coin : long/short/flat + entry_ts + size.
+    3. Fragments du même ordre détectés via :
+       - même `oid` (priorité) si dispo dans le fill,
+       - sinon delta_t < intra_window_ms ET même (coin, side).
+    4. Compute hold = exit_time - entry_time pour chaque cycle complet (passage
+       de non-flat à flat).
+
+    Fields requis dans chaque fill (schema HL `user_fills_by_time`) :
+      - `coin` : str
+      - `side` : 'B' (buy / long) ou 'A' (sell / short)
+      - `sz` : str / float (size en base coin)
+      - `time` : int (epoch ms)
+      - `oid` : int (order id, optionnel mais préféré)
+
+    Returns liste de dicts {coin, entry_ts, exit_ts, side, hold_ms}.
+    """
+    fills_sorted = sorted(fills, key=lambda f: int(f.get("time", 0)))
+    positions_closed: list[dict[str, Any]] = []
+    # coin -> {'side': long/short/flat, 'entry_ts': int, 'size': float}
+    state_by_coin: dict[str, dict[str, Any]] = {}
+
+    for fill in fills_sorted:
+        coin = fill.get("coin", "")
+        raw_side = fill.get("side", "")
+        if not coin or not raw_side:
+            continue
+        side = "long" if raw_side == "B" else "short"
+        try:
+            size = float(fill.get("sz", 0))
+            ts = int(fill.get("time", 0))
+        except (TypeError, ValueError):
+            continue
+        if size <= 0 or ts <= 0:
+            continue
+
+        st = state_by_coin.setdefault(
+            coin,
+            {"side": "flat", "entry_ts": None, "size": 0.0},
+        )
+
+        if st["side"] == "flat":
+            # Opening from flat
+            st["side"] = side
+            st["entry_ts"] = ts
+            st["size"] = size
+        elif st["side"] == side:
+            # Adding to position (scale-in)
+            st["size"] += size
+        else:
+            # Reducing / closing / flipping
+            st["size"] -= size
+            if st["size"] <= 1e-9:
+                # Closed (or about to flip)
+                positions_closed.append({
+                    "coin": coin,
+                    "entry_ts": st["entry_ts"],
+                    "exit_ts": ts,
+                    "side": st["side"],
+                    "hold_ms": ts - st["entry_ts"]
+                    if st["entry_ts"] is not None else 0,
+                })
+                overshoot = -st["size"]
+                if overshoot > 1e-9:
+                    # Flip : after close, residual opens opposite side
+                    st["side"] = side
+                    st["entry_ts"] = ts
+                    st["size"] = overshoot
+                else:
+                    st["side"] = "flat"
+                    st["entry_ts"] = None
+                    st["size"] = 0.0
+    return positions_closed
+
+
+def median_hold_ms_logical(
+    fills: list[dict[str, Any]],
+    intra_window_ms: int = INTRA_ORDER_WINDOW_MS,
+) -> int | None:
+    """Retourne la médiane des hold_ms logiques, ou None si pas de cycle."""
+    closures = compute_hold_ms_logical(fills, intra_window_ms=intra_window_ms)
+    if not closures:
+        return None
+    holds = sorted(c["hold_ms"] for c in closures)
+    return holds[len(holds) // 2]
 
 
 class WalletPerformanceTracker:
@@ -70,6 +193,28 @@ class WalletPerformanceTracker:
         elif net_pnl < 0:
             s["n_losses"] += 1
         return s
+
+    # ---- A4 hold-logical helpers (2026-05-27) ----
+
+    @staticmethod
+    def use_legacy_hold() -> bool:
+        """Env flag `WALLET_PERF_LEGACY_HOLD=true` → ancienne logique
+        (delta inter-fills atomiques). Defaut False = nouveau calcul logique.
+        """
+        return os.environ.get(
+            "WALLET_PERF_LEGACY_HOLD", "false"
+        ).strip().lower() in ("1", "true", "yes")
+
+    @staticmethod
+    def compute_hold_ms_from_fills(
+        fills: list[dict[str, Any]],
+    ) -> int | None:
+        """Computes median hold_ms logique sur un jeu de fills HL.
+
+        Délégué à `median_hold_ms_logical()` (logique partagée + testée).
+        Returns None si pas de cycle complet (positions encore ouvertes).
+        """
+        return median_hold_ms_logical(fills)
 
     def should_auto_mute(self, wallet: str) -> tuple[bool, str]:
         """Returns (should_mute, reason)."""

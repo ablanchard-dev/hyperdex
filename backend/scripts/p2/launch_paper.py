@@ -59,14 +59,16 @@ TARGET_NOTIONAL = PAPER_CAPITAL * R_PCT * DEFAULT_LEVERAGE  # $30 = 10% capital 
 
 # Concurrent caps — à NANO $300, max_concurrent=10 limite expo à $300 = 100% capital
 # (margin total = 100% × R% = 20% capital ; liquidation requiert -20% sur 1 position lev5)
-MAX_CONCURRENT = 20
+MAX_CONCURRENT = 30
+# Ship 2026-05-27 post méta-audit : 20→30 (5859 rejects cap concurrent mesurés sur run 11h
+# = saturation forte confirmée empiriquement). Effort minime, gain attendu +20-50% trades capturés.
 # 5 = 50% capital max sur 1 coin (5 × $30 = $150 sur $300). Plus permissif que 3
 # pour ne pas rater les signaux convergents quand plusieurs wallets cohorte
 # tradent le même coin.
-# MAX_CONCURRENT bumped 10→20 le 2026-05-25 : portfolio saturé 10/10 pendant
-# 14h+ (wallets ne ferment pas swing positions), 324 REJECT en peak US =
-# signal raté. À 20 × $30 = $600 expo théorique (200% capital) - risk levier
-# effectif ~10x sur $300 capital. Acceptable en paper, à reconsidérer en live.
+# MAX_CONCURRENT bumped 10→20 le 2026-05-25 puis 20→30 le 2026-05-27 : portfolio saturé
+# pendant 14h+ (wallets ne ferment pas swing positions). À 30 × $30 = $900 expo théorique
+# (300% capital) - risk levier effectif ~15x sur $300 capital. Acceptable en paper, à
+# reconsidérer en live (réduire à 20 avant flip).
 MAX_PER_ASSET = {
     # Coins liquides où la cohorte 232 converge naturellement (100+ wallets
     # peuvent toucher HYPE simultanément). Cap 8 = capture plus de signal majeur
@@ -80,8 +82,13 @@ MAX_PER_ASSET = {
 }
 
 # Latence simulée copy
-LATENCY_MIN_MS = 200
-LATENCY_MAX_MS = 800
+# Fix paper=live parity 2026-05-27 (audit subagent) : Glassnode mars 2026
+# mesure median order-to-fill = 884ms Tokyo / 1079ms Ashburn. L'ancien
+# range 200-800ms (median 500ms) sous-estimait latency réelle de 400-580ms.
+# Range 600-1200ms aligné avec observations Glassnode.
+# Source : https://www.coindesk.com/markets/2026/03/30/hyperliquid-traders-in-tokyo-get-200-millisecond-edge-glassnode-research-shows
+LATENCY_MIN_MS = 600
+LATENCY_MAX_MS = 1200
 
 
 def load_cohort() -> list[dict]:
@@ -222,11 +229,32 @@ async def main():
     )
     # A4 : per-wallet performance + auto-mute négatif
     wallet_perf = WalletPerformanceTracker(persist_path=WALLET_PERF_PATH)
+
+    # Fix paper=live parity 2026-05-27 : maint_margin per-coin via info.meta()
+    # HL formule : maint_mm = (1/maxLev) / 2 [HL Liquidations docs]
+    # Ex BTC maxLev=40 → maint=1.25%, PURR maxLev=3 → maint=16.67%
+    maint_margin_map = {}
+    try:
+        meta = info.meta()
+        for asset in meta.get("universe", []):
+            name = asset.get("name")
+            mx = asset.get("maxLeverage", 0)
+            if name and mx > 0:
+                maint_margin_map[name] = (1.0 / mx) / 2.0
+        log(f"[MAINT_MM] loaded {len(maint_margin_map)} per-asset maint margins. "
+            f"Samples: BTC={maint_margin_map.get('BTC',0)*100:.2f}% "
+            f"HYPE={maint_margin_map.get('HYPE',0)*100:.2f}% "
+            f"PURR={maint_margin_map.get('PURR',0)*100:.2f}% "
+            f"STRK={maint_margin_map.get('STRK',0)*100:.2f}%")
+    except Exception as e:
+        log(f"[MAINT_MM] WARNING load failed ({type(e).__name__}): {e} — fallback 5%")
+
     orchestrator = CopyOrchestrator(
         exchange=exchange, sizer=sizer, tracker=tracker,
         default_leverage=DEFAULT_LEVERAGE, verbose=True,
         muted_path=MUTED_PATH,
         wallet_perf=wallet_perf,
+        maint_margin_map=maint_margin_map,
     )
     # bootstrap anti-HFT depuis l'historique paper accumulé
     orchestrator.bootstrap_holds_from_jsonl(POSITIONS_LOG)

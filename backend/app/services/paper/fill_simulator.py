@@ -24,16 +24,34 @@ class SimulatedFill:
     fee_usd: float
     book_age_ms: int
     error: str | None = None
+    is_maker: bool = False
+    # conditional=True : fill maker NON garanti. Le prix retourné est le prix
+    # passif (touch) SI rempli, mais le remplissage dépend du flux futur et
+    # subit l'adverse selection. Le caller (orchestrator) doit appliquer le
+    # modèle de fill (touch atteint dans la fenêtre OU non-fill/fallback).
+    conditional: bool = False
 
 
 class FillSimulator:
     """Walk-the-book → VWAP + slippage. Pure computation."""
 
-    DEFAULT_FEE_RATE = 0.00025  # HL taker baseline (0.025%)
+    # Fix paper=live parity 2026-05-27 (audit subagent) :
+    # HL réel tier 0 taker = 0.045% (pas 0.025%). Source :
+    # https://hyperliquid.gitbook.io/hyperliquid-docs/trading/fees
+    # Mesure empirique pré-fix : paper sous-estimait fees de 44%, paper PnL
+    # +5.2% optimiste vs live. Cette ligne aligne la simulation.
+    DEFAULT_FEE_RATE = 0.00045  # HL taker tier 0 (0.045%)
+    # HL maker tier 0 = 0.015% (même source docs HL fees). Post-only entry
+    # paie maker au lieu de taker → économie 0.030% par côté + pas de spread
+    # traversé. MAIS fill non garanti (adverse selection) — cf simulate_maker.
+    DEFAULT_MAKER_FEE_RATE = 0.00015  # HL maker tier 0 (0.015%)
 
     def __init__(self, fee_rate: float | None = None,
-                 max_book_age_s: float = 2.0):
+                 max_book_age_s: float = 2.0,
+                 maker_fee_rate: float | None = None):
         self.fee_rate = fee_rate if fee_rate is not None else self.DEFAULT_FEE_RATE
+        self.maker_fee_rate = (maker_fee_rate if maker_fee_rate is not None
+                               else self.DEFAULT_MAKER_FEE_RATE)
         self.max_book_age_s = max_book_age_s
 
     def book_age_ms(self, book: dict) -> int:
@@ -152,5 +170,68 @@ class FillSimulator:
         return SimulatedFill(
             success=True, vwap=vwap, filled_size=filled, levels_walked=n_levels,
             notional_usd=notional, fee_usd=fee,
+            book_age_ms=self.book_age_ms(book), is_maker=False,
+        )
+
+    def best_touch(self, book: dict, side: str) -> float:
+        """Prix passif (touch) de NOTRE côté pour un ordre post-only.
+
+        BUY  ("B") → on poste au best bid (bids[0], plus haut bid).
+        SELL ("A") → on poste au best ask (asks[0], plus bas ask).
+        Retourne 0.0 si indisponible.
+        """
+        levels = book.get("levels") or [[], []]
+        if len(levels) < 2:
+            return 0.0
+        bids, asks = levels[0], levels[1]
+        side_up = (side or "").upper()
+        our_side = bids if side_up == "B" else (asks if side_up == "A" else [])
+        if not our_side:
+            return 0.0
+        try:
+            return float(our_side[0].get("px", 0))
+        except Exception:
+            return 0.0
+
+    def simulate_maker(self, book: dict, side: str, target_size: float
+                       ) -> SimulatedFill:
+        """Simule un fill POST-ONLY (maker) au prix passif de notre côté.
+
+        ⚠️ Fill NON garanti. Cette méthode retourne le fill *si* l'ordre est
+        rempli (prix = touch passif, fee maker). Le remplissage réel dépend du
+        flux futur et subit l'adverse selection (un bid passif se remplit quand
+        le prix BAISSE vers nous = souvent quand le trade va dans le mauvais
+        sens). Le caller doit appliquer le modèle de fill conditionnel
+        (`conditional=True` ici) : vérifier que le touch est atteint dans une
+        fenêtre, sinon non-fill ou fallback taker.
+
+        Validité post-only : on ne traverse jamais le spread (on poste au touch
+        de notre côté, qui est par construction non-marketable). Taille : pour
+        nos notionals (~$30) ≪ profondeur HYPE/BTC/ETH, fill plein au touch est
+        réaliste ; le risque de queue n'est pas modélisé ici.
+        """
+        err = self.check_book_fresh(book)
+        if err:
+            return SimulatedFill(
+                success=False, vwap=0.0, filled_size=0.0, levels_walked=0,
+                notional_usd=0.0, fee_usd=0.0,
+                book_age_ms=self.book_age_ms(book), error=err,
+                is_maker=True, conditional=True,
+            )
+        px = self.best_touch(book, side)
+        if px <= 0 or target_size <= 0:
+            return SimulatedFill(
+                success=False, vwap=0.0, filled_size=0.0, levels_walked=0,
+                notional_usd=0.0, fee_usd=0.0,
+                book_age_ms=self.book_age_ms(book),
+                error="MAKER no touch (book vide ou side absent)",
+                is_maker=True, conditional=True,
+            )
+        notional = target_size * px
+        fee = notional * self.maker_fee_rate
+        return SimulatedFill(
+            success=True, vwap=px, filled_size=target_size, levels_walked=0,
+            notional_usd=notional, fee_usd=fee,
             book_age_ms=self.book_age_ms(book),
+            is_maker=True, conditional=True,
         )
