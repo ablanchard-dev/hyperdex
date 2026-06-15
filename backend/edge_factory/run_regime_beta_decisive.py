@@ -6,12 +6,13 @@ Risk-on BTC → long haut-beta / short bas-beta ; risk-off → l'inverse. Tout t
 = 6 specs, n_trials=6 honnête. Univers live HL, coûts réels, exec_lag=1. Le CRITIC
 (beta-neutral t≥3) dira si c'est de l'alpha ou du beta timé (probable beta_deguise).
 """
+from pathlib import Path
 import statistics
 import sys
 import time
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 import regime_beta as rb
 import universe as U
 from adapter import Bar, returns_from_bars

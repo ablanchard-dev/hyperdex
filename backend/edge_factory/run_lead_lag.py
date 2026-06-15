@@ -6,12 +6,13 @@ le lead), 60j × 1h, grille lookback {1,2,3,6}h × top_frac {0.2,0.3} = 8 specs,
 beta_window=48h, taker 4.5 + slip 5bps, exec_lag=1. Jugé CRITIC (DSR déflaté ×8 +
 beta-neutral + PBO). Prior BAS (le reversal-mort prédit que le rattrapage l'est aussi).
 """
+from pathlib import Path
 import statistics
 import sys
 import time
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 import lead_lag as ll
 from adapter import Bar, returns_from_bars
 from verdict import _stats, evaluate_edge

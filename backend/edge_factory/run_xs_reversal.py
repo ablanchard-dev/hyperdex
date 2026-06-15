@@ -10,11 +10,12 @@ PRÉ-ENREGISTRÉ (lancé UNE fois, pas de p-hacking) : univers top-50 HL par vol
 (figé), 60j × 1h, grille lookback {1,2,3,6}h × top_frac {0.2,0.3} = 8 specs,
 taker 4.5 + slippage 5bps, exec_lag=1. Jugé par CRITIC (DSR déflaté ×8 + beta + PBO).
 """
+from pathlib import Path
 import sys
 import time
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 from adapter import Bar
 from cross_sectional import cross_sectional_pbo, judge_cross_sectional, survivors
 from app.services.hl_api.info_client import InfoClient

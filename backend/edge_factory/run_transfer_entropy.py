@@ -9,11 +9,12 @@ LINÉAIRE réfuté) — la TE (non-linéaire, asymétrique) est l'outil correct 
 PRÉ-ENREGISTRÉ : top-20 HL par volume (figé), 90j × 1h, n_bins=4, 200 surrogates.
 On ne TRADE rien ici — on mesure si un flux exploitable existe AVANT de bâtir un signal.
 """
+from pathlib import Path
 import sys
 import time
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 import transfer_entropy as te
 from app.services.hl_api.info_client import InfoClient
 

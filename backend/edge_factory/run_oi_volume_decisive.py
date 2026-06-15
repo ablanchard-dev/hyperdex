@@ -7,13 +7,14 @@ Data : candles HL (close+volume 'v') + OI HL natif (Coinalyze .H). Grille fixée
 seuils {1.5,2,2.5,3} × fenêtres {24,48,72} = 12 specs, n_trials=12 honnête. Per-coin
 agrégé (moyenne equal-weight des returns par coin) jugé vs BTC. Un seul run.
 """
+from pathlib import Path
 import os
 import statistics
 import sys
 import time
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 import coinalyze as cz
 import oi_volume_signal as ov
 import universe as U

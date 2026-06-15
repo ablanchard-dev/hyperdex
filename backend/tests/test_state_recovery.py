@@ -6,7 +6,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from app.services.paper.pnl_tracker import PnLTracker
 from app.services.paper.position import PaperPosition
 

@@ -12,13 +12,14 @@ PRÉ-ENREGISTRÉ (lancé honnêtement) : BTC perp Binance, 30j × 1h, seuil casc
 quantile 0.90 de l'intensité, coûts taker 4.5 + slip 5 bps, exec_lag=1. On ne TUNE
 pas le seuil pour faire passer : un seul run, verdict accepté tel quel.
 """
+from pathlib import Path
 import os
 import statistics
 import sys
 import time
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 import coinalyze as cz
 import hawkes as hk
 import hawkes_signal as hs

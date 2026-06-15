@@ -18,7 +18,7 @@ import sys
 import time
 from pathlib import Path
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from hyperliquid.info import Info
 from hyperliquid.utils import constants
@@ -34,8 +34,8 @@ from app.services.paper.preflight import run_preflight, PreflightError
 from app.services.paper.fill_backfiller import FillBackfiller
 
 
-DETAILED_CSV = Path("/opt/app/hyperdex/backend/data/p1/consistent_set.csv")
-PAPER_DIR = Path("/opt/app/hyperdex/backend/data/paper")
+DETAILED_CSV = Path(__file__).resolve().parents[2] / "data" / "p1" / "consistent_set.csv"
+PAPER_DIR = Path(__file__).resolve().parents[2] / "data" / "paper"
 PAPER_DIR.mkdir(parents=True, exist_ok=True)
 POSITIONS_LOG = PAPER_DIR / "positions.jsonl"
 LAUNCHER_LOG = PAPER_DIR / "launcher.log"

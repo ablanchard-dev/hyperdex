@@ -13,7 +13,7 @@ import httpx
 
 API_BASE = "https://v2-api.hyperstats.org/api"
 HL_LB = "https://stats-data.hyperliquid.xyz/Mainnet/leaderboard"
-OUT = Path("/opt/app/hyperdex/backend/data/p1_6/hyperstats_unique.json")
+OUT = Path(__file__).resolve().parents[2] / "data" / "p1_6" / "hyperstats_unique.json"
 OUT.parent.mkdir(parents=True, exist_ok=True)
 
 GRADES = ["S+", "S", "A+", "A", "B+", "B"]

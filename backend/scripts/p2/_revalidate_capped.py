@@ -17,13 +17,13 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from app.services.hl_api.info_client import InfoClient
 
-CACHE_JSONL = Path("/opt/app/hyperdex/backend/data/p1/fills_raw_p1_5.jsonl")
-CSV_96 = Path("/opt/app/hyperdex/backend/data/p1/detailed_97.csv")
-OUT_DIR = Path("/opt/app/hyperdex/backend/data/p1")
+CACHE_JSONL = Path(__file__).resolve().parents[2] / "data" / "p1" / "fills_raw_p1_5.jsonl"
+CSV_96 = Path(__file__).resolve().parents[2] / "data" / "p1" / "detailed_97.csv"
+OUT_DIR = Path(__file__).resolve().parents[2] / "data" / "p1"
 DEEP_CACHE = OUT_DIR / "fills_raw_deep.jsonl"
 RESULT_CSV = OUT_DIR / "new_bonferroni.csv"
 

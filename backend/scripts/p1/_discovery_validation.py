@@ -26,7 +26,7 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from app.services.hl_api.info_client import InfoClient  # noqa: E402
 
 # --- config ---
@@ -37,7 +37,7 @@ WINDOW_DAYS = 90
 HOLDOUT_DAYS = 30
 MIN_FILLS = 50
 
-OUT_DIR = Path("/opt/app/hyperdex/backend/data/p1")
+OUT_DIR = Path(__file__).resolve().parents[2] / "data" / "p1"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 FILLS_CACHE = OUT_DIR / "fills_raw.json"
 VERDICT_MD = OUT_DIR / "phase1_verdict.md"

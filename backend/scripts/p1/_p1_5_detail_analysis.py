@@ -16,7 +16,7 @@ from collections import Counter, defaultdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-OUT = Path("/opt/app/hyperdex/backend/data/p1")
+OUT = Path(__file__).resolve().parents[2] / "data" / "p1"
 JSONL = OUT / "fills_raw_p1_5.jsonl"
 DETAIL_MD = OUT / "detailed_97.md"
 DETAIL_CSV = OUT / "detailed_97.csv"

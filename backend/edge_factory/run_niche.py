@@ -4,10 +4,11 @@
 Scanne l'univers, garde les perps listés depuis <max_age jours, teste le momentum
 réflexif OOS via le CRITIC. Lancé détaché (scan ~172 perps pacé 1.5s = qq min).
 """
+from pathlib import Path
 import sys
 import time
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import recency
 import backtest
 from hl_adapter import HLSmallCapAdapter

@@ -9,13 +9,14 @@ Survit au CRITIC durci → vrai lead. Sinon → réfutation documentée.
 
 Univers live HL figé, OI HL natif (Coinalyze .H), coûts réels, exec_lag=1.
 """
+from pathlib import Path
 import os
 import statistics
 import sys
 import time
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 import coinalyze as cz
 import oi_xs
 import universe as U

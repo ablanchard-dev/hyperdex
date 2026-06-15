@@ -11,7 +11,7 @@ import statistics
 from collections import defaultdict
 from pathlib import Path
 
-CSV = Path("/opt/app/hyperdex/backend/data/p1/detailed_97.csv")
+CSV = Path(__file__).resolve().parents[2] / "data" / "p1" / "detailed_97.csv"
 
 # Notre fee taker round-trip = 0.025% × 2 = 0.05%
 FEE_RATE_RT = 0.0005

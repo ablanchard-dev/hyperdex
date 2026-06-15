@@ -20,9 +20,9 @@ from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-JSONL = Path("/opt/app/hyperdex/backend/data/p1/fills_raw_p1_5.jsonl")
-DEEP_JSONL = Path("/opt/app/hyperdex/backend/data/p1/fills_raw_deep.jsonl")
-OUT_CSV = Path("/opt/app/hyperdex/backend/data/p1/consistent_set.csv")
+JSONL = Path(__file__).resolve().parents[2] / "data" / "p1" / "fills_raw_p1_5.jsonl"
+DEEP_JSONL = Path(__file__).resolve().parents[2] / "data" / "p1" / "fills_raw_deep.jsonl"
+OUT_CSV = Path(__file__).resolve().parents[2] / "data" / "p1" / "consistent_set.csv"
 
 NOW = datetime.now(timezone.utc)
 WINDOW_START_MS = int((NOW - timedelta(days=90)).timestamp() * 1000)

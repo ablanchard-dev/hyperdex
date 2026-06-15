@@ -6,12 +6,13 @@ long forte-croissance-TVL / short décroissance (capital afflue → prix suit). 
 pré-enregistrée lookback {7,14,30} × top_frac {0.3,0.4} = 6 specs, n_trials=6 honnête.
 Un seul run. Survit au CRITIC durci → 1er lead fondamental ; sinon réfutation propre.
 """
+from pathlib import Path
 import statistics
 import sys
 import time
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 import tvl_signal as tv
 import universe as U
 from verdict import evaluate_edge

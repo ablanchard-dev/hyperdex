@@ -5,12 +5,13 @@ Fetch ~50 perps (candles 1h + funding 1h), aligne par heure, short high-funding 
 long low-funding, juge par le CRITIC (beta-neutral + DSR déflaté). Carry = le plus
 robuste de la littérature ; voyons s'il survit net de coûts sur HL.
 """
+from pathlib import Path
 import statistics
 import sys
 import time
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 import funding as fd
 from adapter import Bar, returns_from_bars
 from verdict import evaluate_edge

@@ -11,6 +11,7 @@ candles(name, interval, start_ms, end_ms) — InfoClient en prod, mock en test.
 
 Live-check : python hl_adapter.py --live
 """
+from pathlib import Path
 from typing import List
 
 from adapter import Bar, Fees, VenueAdapter
@@ -74,7 +75,7 @@ if __name__ == "__main__":
     import sys
     import time
     if "--live" in sys.argv:
-        sys.path.insert(0, "/opt/app/hyperdex/backend")
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
         from app.services.hl_api.info_client import InfoClient
         a = HLSmallCapAdapter(InfoClient())
         u = a.universe()

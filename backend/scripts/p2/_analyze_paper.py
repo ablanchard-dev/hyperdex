@@ -8,7 +8,7 @@ import statistics
 from collections import defaultdict
 from pathlib import Path
 
-JSONL = Path("/opt/app/hyperdex/backend/data/paper/positions.jsonl")
+JSONL = Path(__file__).resolve().parents[2] / "data" / "paper" / "positions.jsonl"
 
 if not JSONL.exists():
     print("Aucun fichier positions.jsonl")

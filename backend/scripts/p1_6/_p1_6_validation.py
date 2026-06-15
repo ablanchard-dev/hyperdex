@@ -45,7 +45,7 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from app.services.hl_api.info_client import InfoClient  # noqa: E402
 from app.services.paper.wallet_perf import (  # noqa: E402
     compute_hold_ms_logical,
@@ -76,7 +76,7 @@ TIER_SCALP_MAX_MS = 60 * 60 * 1000  # 5min-1h
 TIER_SWING_MAX_MS = 48 * 60 * 60 * 1000  # 1h-48h
 
 # --- chemins ---
-ROOT = Path("/opt/app/hyperdex/backend")
+ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = ROOT / "data" / "p1_6"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 BASELINE_CSV = ROOT / "data" / "p1" / "consistent_set.csv"

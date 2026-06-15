@@ -6,12 +6,13 @@ appris sur les 70% train, appliqué aux 30% test (anti-look-ahead). Grille pré-
 min_abs {0, 0.0005, 0.001} = 3 specs × per-coin agrégé equal-weight. n_trials honnête.
 Univers live HL, coûts réels, exec_lag=1. Survit → lead ; sinon réfuté propre.
 """
+from pathlib import Path
 import statistics
 import sys
 import time
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 import seasonality as sz
 import universe as U
 from adapter import Bar, returns_from_bars

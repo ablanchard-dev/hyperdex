@@ -13,8 +13,9 @@ from __future__ import annotations
 import asyncio
 import sys
 import time
+from pathlib import Path
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from hyperliquid.info import Info
 from hyperliquid.utils import constants
 

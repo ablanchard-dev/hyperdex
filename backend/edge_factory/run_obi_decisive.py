@@ -7,13 +7,14 @@ ET NET (round-trip réel par coin = 2×taker + spread médian du coin). Portefeu
 equal-weight des coins, jugé CRITIC durci. lag=0 = idéal irréaliste (référence haute) ;
 lag=1 = réaliste (latence retail). Si même le GROSS lag=0 est nul → pas de signal du tout.
 """
+from pathlib import Path
 import json
 import statistics
 import sys
 from collections import defaultdict
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 import obi_backtest as ob
 import universe as U
 from verdict import evaluate_edge

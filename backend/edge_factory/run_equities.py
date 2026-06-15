@@ -5,11 +5,12 @@ Fetch ~30 small-caps (Yahoo, pacé), backteste tout l'espace d'hypothèses OOS,
 juge via le CRITIC (DSR déflaté par #hypothèses), logge en ResearchMemory.
 Lancé détaché. Attendu : peu/pas de survivants (normal) ; succès = verdict honnête.
 """
+from pathlib import Path
 import sys
 import time
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 import generator as g
 from equities_adapter import EquitiesAdapter, EQ_TAKER_BPS
 from research_memory import ResearchMemory
@@ -19,7 +20,7 @@ TICKERS = ["PLUG", "FUBO", "SOFI", "RIOT", "MARA", "CLOV", "SPCE", "OPEN",
            "LMND", "RKLB", "IONQ", "DKNG", "AFRM", "UPST", "FSLY", "PATH",
            "GTLB", "BBAI", "SOUN", "ASTS", "ACHR", "JOBY", "CHPT", "RUN",
            "ENPH", "DNA", "WKHS", "CLSK", "HUT", "BTBT"]
-MEM = "/opt/app/hyperdex/backend/edge_factory/_equities_research.json"
+MEM = str(Path(__file__).resolve().parent / "_equities_research.json")
 
 
 def main():

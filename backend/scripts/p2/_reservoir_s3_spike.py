@@ -25,10 +25,10 @@ from botocore.exceptions import ClientError
 
 BUCKET = 'hl-mainnet-node-data'
 PREFIX = 'node_fills_by_block/hourly'
-DATA_DIR = Path('/opt/app/hyperdex/backend/data/p2_reservoir')
+DATA_DIR = Path(__file__).resolve().parents[2] / "data" / "p2_reservoir"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-COHORT_CSV = Path('/opt/app/hyperdex/backend/data/p1/consistent_set.csv')
+COHORT_CSV = Path(__file__).resolve().parents[2] / "data" / "p1" / "consistent_set.csv"
 
 def load_cohort_232():
     """Load current cohort addresses (lowercase)."""

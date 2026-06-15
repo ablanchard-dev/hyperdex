@@ -8,13 +8,14 @@ rolling passé-only → sur spike |z|>seuil, entrer CONTRE → juger CRITIC (DSR
 PRÉ-ENREGISTRÉ : BTC perp Binance, 30j × 1h, z_window=48, z_threshold=2.0, coûts
 taker 4.5 + slip 5 bps, exec_lag=1. Un seul run, verdict accepté tel quel (pas de tune).
 """
+from pathlib import Path
 import os
 import statistics
 import sys
 import time
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 import liq_spike as ls
 import permutation as pm
 from adapter import Bar, returns_from_bars

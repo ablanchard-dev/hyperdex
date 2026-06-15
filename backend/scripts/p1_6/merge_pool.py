@@ -8,7 +8,7 @@ import json
 import csv
 from pathlib import Path
 
-DATA = Path("/opt/app/hyperdex/backend/data")
+DATA = Path(__file__).resolve().parents[2] / "data"
 COHORT_CSV = DATA / "p1" / "consistent_set.csv"  # 333 wallets baseline
 HT_UNIQUE = DATA / "p1_6" / "hypertracker_unique.json"
 HS_UNIQUE = DATA / "p1_6" / "hyperstats_unique.json"

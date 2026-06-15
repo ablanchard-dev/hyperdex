@@ -7,12 +7,13 @@ perps ≥ seuil de liquidité, contraintes/coûts réels), pas à un top-N arbit
 Ajouter une famille = un make_*_hunter de plus dans build_registry(). Data partagée
 (fetch HL 1×), verdicts loggés en research_memory, classés survivants-d'abord.
 """
+from pathlib import Path
 import statistics
 import sys
 import time
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 import coinalyze as cz
 import hunters as H
 import liq_spike as ls

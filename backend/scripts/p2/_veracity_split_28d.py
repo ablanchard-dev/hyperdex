@@ -32,7 +32,7 @@ from botocore.exceptions import ClientError
 
 BUCKET = "hl-mainnet-node-data"
 PREFIX = "node_fills_by_block/hourly"
-DATA_DIR = Path("/opt/app/hyperdex/backend/data/p2_reservoir")
+DATA_DIR = Path(__file__).resolve().parents[2] / "data" / "p2_reservoir"
 
 # cutoff : train < 20260514, test >= 20260514
 CUTOFF_MS = int(datetime(2026, 5, 14, tzinfo=timezone.utc).timestamp() * 1000)

@@ -5,6 +5,7 @@ Le signal à la barre i n'utilise QUE les barres 0..i (passé), et la position
 gagne le return [i, i+1]. Garanti sans fuite (test no-look-ahead prefix).
 Backtest minimal Phase 1 (le vrai moteur institutionnel = portage a prior project).
 """
+from pathlib import Path
 import statistics
 from typing import List
 
@@ -80,7 +81,7 @@ if __name__ == "__main__":
     import sys
     import time
     if "--live" in sys.argv:
-        sys.path.insert(0, "/opt/app/hyperdex/backend")
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
         from app.services.hl_api.info_client import InfoClient
         from hl_adapter import HLSmallCapAdapter
         a = HLSmallCapAdapter(InfoClient(), vol_max_usd=5_000_000)  # seuil bas

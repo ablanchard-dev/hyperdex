@@ -5,14 +5,15 @@ Univers exogène (constituants S&P 600 small-cap, Wikipedia) — pas hand-picked
 Tranche fixe alphabétique, lancée UNE fois. Si t_alpha≥2 ET DSR>0.95 = edge
 confirmé ; sinon réfutation propre du momentum cross-sectional small-cap.
 """
+from pathlib import Path
 import re
 import sys
 import time
 
 import httpx
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 import cross_sectional as xs
 from equities_adapter import EquitiesAdapter
 

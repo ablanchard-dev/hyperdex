@@ -14,7 +14,7 @@ import requests
 
 CDN_BASE = "https://dw3ji7n7thadj.cloudfront.net/aggregator"
 HL_LB = "https://stats-data.hyperliquid.xyz/Mainnet/leaderboard"
-OUT = Path("/opt/app/hyperdex/backend/data/p1_6/hypertracker_unique.json")
+OUT = Path(__file__).resolve().parents[2] / "data" / "p1_6" / "hypertracker_unique.json"
 OUT.parent.mkdir(parents=True, exist_ok=True)
 
 def fetch_hl_leaderboard() -> set[str]:

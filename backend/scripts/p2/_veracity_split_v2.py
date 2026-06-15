@@ -43,7 +43,7 @@ from botocore.exceptions import BotoCoreError, ClientError
 BUCKET = "hl-mainnet-node-data"
 PREFIX = "node_fills_by_block/hourly"
 DATA_DIR = Path(os.environ.get(
-    "VERACITY_DATA_DIR", "/opt/app/hyperdex/backend/data/p2_reservoir"))
+    "VERACITY_DATA_DIR", str(Path(__file__).resolve().parents[2] / "data" / "p2_reservoir")))
 CUTOFF_DATE = "20260514"
 CUTOFF_MS = int(datetime(2026, 5, 14, tzinfo=timezone.utc).timestamp() * 1000)
 TAKER_RT_BPS = 9.0          # coût taker round-trip (4.5 bps × 2)

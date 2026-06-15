@@ -5,11 +5,12 @@ Long-short par classement → beta≈0 → si rendement OOS positif net = VRAI A
 (pas du beta). C'est le seul angle non encore réfuté. Jugé par le CRITIC.
 Alignement par dates communes (requis pour ranker l'univers à chaque date).
 """
+from pathlib import Path
 import sys
 import time
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 import cross_sectional as xs
 from equities_adapter import EquitiesAdapter
 from research_memory import ResearchMemory
@@ -26,7 +27,7 @@ TICKERS = ["PLUG", "FUBO", "SOFI", "RIOT", "MARA", "CLOV", "SPCE", "OPEN",
            "NET", "DDOG", "CRWD", "ZS", "SNOW", "ESTC", "FROG", "AMPL",
            "BRZE", "BIGC", "RNG", "FIVN", "MGNI", "PUBM", "CRTO", "DV",
            "SKLZ", "PENN", "RSI", "RXRX", "SAVA", "VKTX", "CRSP", "NTLA"]
-MEM = "/opt/app/hyperdex/backend/edge_factory/_xs_research.json"
+MEM = str(Path(__file__).resolve().parent / "_xs_research.json")
 
 
 def align(symbol_bars, bench_bars):

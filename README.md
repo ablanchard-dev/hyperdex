@@ -5,9 +5,11 @@ perpetuals DEX, built with a **validation-first discipline**: the trading engine
 deliberately gated behind out-of-sample statistical proof that a copyable edge exists,
 so the system never goes live on a strategy that only looks good in-sample.
 
-> ⚠️ **Status: paper / research.** Live trading is intentionally locked. This repository
-> showcases the data pipeline, the faithful simulation engine, the risk layer and the
-> validation methodology — not a claim of profitability.
+> ⚠️ **Status: paper / research.** The system defaults to paper / dry-run; live
+> execution is gated behind an explicit flag (`LIVE_ENABLED`, off by default) and is
+> not enabled here. This repository showcases the data pipeline, the faithful
+> simulation engine, the risk layer and the validation methodology — not a claim of
+> profitability.
 
 ## Why it's built this way
 
@@ -39,8 +41,10 @@ leaderboards are treated as survivorship-biased and never taken at face value.
 
 ## Quickstart (dev)
 
+Requires **Python 3.12+** (see `pyproject.toml`).
+
 ```bash
-python3 -m venv .venv && source .venv/bin/activate
+python3.12 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 cp backend/.env.template backend/.env   # set HL_ACCOUNT_ADDRESS + HL_API_PRIVATE_KEY
 uvicorn app.main:app --reload --app-dir backend
@@ -61,18 +65,21 @@ backend/
 │   ├── models.py
 │   └── services/
 │       ├── hl_api/          # Info client + sharded WebSocket client
-│       ├── discovery/       # candidate wallet discovery
-│       ├── validation/      # out-of-sample holdout + multiple-testing
-│       ├── paper_engine/    # order-book-walking fill simulator
-│       └── risk/            # sizing, circuit breakers, guards
-├── tests/                   # unit tests on the critical bricks
-scripts/systemd/             # deployment units
+│       ├── copy/            # copy orchestrator + position sizer
+│       ├── execution/       # order submission (paper/live via dry_run flag)
+│       └── paper/           # order-book-walking fill simulator, PnL,
+│                            #   funding, reconcile, risk guards, wallet perf
+├── scripts/                 # discovery + validation research pipeline
+│   ├── p1/, p1_6/           # candidate discovery, out-of-sample holdout
+│   └── p2/                  # multiple-testing correction (DSR/PBO), paper launch
+├── edge_factory/            # standalone edge-validation harness
+└── tests/                   # unit tests on the critical bricks
 ```
 
 ## Engineering principles
 
-1. Live trading stays locked until measured proof (profit factor, max drawdown, minimum
-   sample, beats baseline).
+1. Live trading stays off by default and is enabled only after measured proof
+   (profit factor, max drawdown, minimum sample, beats baseline).
 2. Paper must be a truthful mirror of live — real order book, never mid-price.
 3. Validation = real out-of-sample holdout **with** multiple-testing correction.
 4. PnL is the exchange's reported `closedPnl`, never reconstructed.

@@ -21,7 +21,7 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from app.services.hl_api.info_client import InfoClient  # noqa: E402
 
 # --- config univers ---
@@ -43,7 +43,7 @@ HOLD_MAX_MINUTES = 48 * 60  # ← opérateur : pas de position >48h
 MIN_HOLD_N = 20
 
 # --- chemins ---
-OUT_DIR = Path("/opt/app/hyperdex/backend/data/p1")
+OUT_DIR = Path(__file__).resolve().parents[2] / "data" / "p1"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 FILLS_JSONL = OUT_DIR / "fills_raw_p1_5.jsonl"  # incrémental (1 wallet par ligne)
 LEGACY_CACHE = OUT_DIR / "fills_raw.json"  # cache P1, à réutiliser

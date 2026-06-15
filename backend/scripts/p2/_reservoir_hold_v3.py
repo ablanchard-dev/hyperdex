@@ -32,7 +32,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 BUCKET = "hl-mainnet-node-data"
 PREFIX = "node_fills_by_block/hourly"
-DATA_DIR = Path("/opt/app/hyperdex/backend/data/p2_reservoir")
+DATA_DIR = Path(__file__).resolve().parents[2] / "data" / "p2_reservoir"
 V2_JSON = DATA_DIR / "reservoir_spike_14d_v2.json"
 
 HOLD_MIN_MS = 10_000  # filtre test (montera si entrées nulles)

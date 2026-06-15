@@ -18,11 +18,11 @@ from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from app.services.hl_api.info_client import InfoClient
 
-OUT_DIR = Path("/opt/app/hyperdex/backend/data/p1")
+OUT_DIR = Path(__file__).resolve().parents[2] / "data" / "p1"
 FILLS_JSONL_V5 = OUT_DIR / "fills_raw_v5.jsonl"
 CSV_V5 = OUT_DIR / "consistent_set_v5.csv"
 RUN_LOG = OUT_DIR / "v5_run.log"

@@ -6,10 +6,10 @@ from collections import Counter, defaultdict
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-POSITIONS = Path("/opt/app/hyperdex/backend/data/paper/positions.jsonl")
-LAUNCHER = Path("/opt/app/hyperdex/backend/data/paper/launcher.log")
-FILLS_JSONL = Path("/opt/app/hyperdex/backend/data/p1/fills_raw_p1_5.jsonl")
-CSV_96 = Path("/opt/app/hyperdex/backend/data/p1/detailed_97.csv")
+POSITIONS = Path(__file__).resolve().parents[2] / "data" / "paper" / "positions.jsonl"
+LAUNCHER = Path(__file__).resolve().parents[2] / "data" / "paper" / "launcher.log"
+FILLS_JSONL = Path(__file__).resolve().parents[2] / "data" / "p1" / "fills_raw_p1_5.jsonl"
+CSV_96 = Path(__file__).resolve().parents[2] / "data" / "p1" / "detailed_97.csv"
 
 now = datetime.now(timezone.utc)
 

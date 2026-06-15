@@ -5,13 +5,14 @@ Sharpe annualisé réel (vs doc 3-6), max drawdown, worst-hour, % hours positifs
 décomposition funding vs base, et STRESS de coûts (fees 1.5 → 5 → 10 bps).
 Si le Sharpe est ~15 annualisé, la vol est probablement sous-estimée.
 """
+from pathlib import Path
 import math
 import statistics
 import sys
 import time
 
-sys.path.insert(0, "/opt/app/hyperdex/backend")
-sys.path.insert(0, "/opt/app/hyperdex/backend/edge_factory")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[0]))
 import funding as fd
 from app.services.hl_api.info_client import InfoClient
 
