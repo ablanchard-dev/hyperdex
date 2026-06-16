@@ -5,7 +5,7 @@ Extrait de ExchangeClient pour être :
 - Réutilisable par paper ET live (pour comparer expected VWAP vs actual fill).
 
 Pas d'I/O — purement computationnel. La fraîcheur du book est aussi
-checkée ici (leçon a prior project : stale book → reject, jamais de bypass).
+checkée ici (règle : stale book → reject, jamais de bypass).
 """
 from __future__ import annotations
 

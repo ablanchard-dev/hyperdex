@@ -1,6 +1,6 @@
 """PaperPosition — modèle perp HL avec leverage, funding accrued, liq_price.
 
-Différences vs a prior project binary position :
+Modèle de position perp continu :
 - Perp continu (pas binary 0/1).
 - Leverage : margin = notional / leverage.
 - Funding accrual horaire (impact PnL sur holds long).

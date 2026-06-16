@@ -48,8 +48,8 @@ class WsUserFillsListener:
 
     # Watchdog PER-SHARD : détecte shard mort sans casser les autres.
     # SDK hyperliquid ne re-subscribe pas au TCP reconnect → un shard "Expired"
-    # = silencieux pour toujours. a prior project gère lui-même les re-subscribes,
-    # nous on doit faire pareil par-shard.
+    # = silencieux pour toujours. On gère donc nous-mêmes les re-subscribes,
+    # par-shard.
     SHARD_SILENCE_S = 180.0  # 3 min sans event sur un shard ayant déjà reçu = mort
     SHARD_MIN_EVENTS_FOR_DEAD_DETECTION = 1  # le shard doit avoir reçu au moins 1 event
 

@@ -1,6 +1,6 @@
 """Tests known-answer pour metrics.py — métriques de perf pur-python.
 
-Portées des définitions canoniques (a prior project backtest/metrics.py + littérature quant) :
+Définitions canoniques (littérature quant) :
   - max_drawdown : max(peak - equity) sur l'equity cumulée des returns
   - sortino : mean / downside-deviation (vol des seuls returns < 0)
   - calmar : return annualisé / |maxDD|

@@ -1,31 +1,35 @@
 # HyperDex
 
 A research-grade **copy-trading framework** for the [Hyperliquid](https://hyperliquid.xyz)
-perpetuals DEX, built with a **validation-first discipline**: the trading engine is
-deliberately gated behind out-of-sample statistical proof that a copyable edge exists,
-so the system never goes live on a strategy that only looks good in-sample.
+perpetuals DEX, built with a **validation-first discipline**: edge research is done in a
+separate harness before any strategy is taken seriously, so the project never builds a
+live engine on top of a strategy that only looks good in-sample.
 
-> ⚠️ **Status: paper / research.** The system defaults to paper / dry-run; live
-> execution is gated behind an explicit flag (`LIVE_ENABLED`, off by default) and is
-> not enabled here. This repository showcases the data pipeline, the faithful
-> simulation engine, the risk layer and the validation methodology — not a claim of
-> profitability.
+> **Status: paper-only / research.** This repository runs in paper / dry-run only —
+> there is no live trading runner. The order-submission client (`execution/exchange.py`)
+> contains a live branch, but it is not wired into any entry point and is not gated by a
+> runtime flag; the only runner (`scripts/p2/launch_paper.py`) forces `dry_run=True`.
+> The repo showcases the data pipeline, the faithful simulation engine, the risk layer
+> and the validation methodology — not a live system and not a claim of profitability.
 
 ## Why it's built this way
 
 Most retail trading bots are built first and validated never. HyperDex inverts that:
-a **discovery + validation phase is a hard gate**. An edge must survive a real temporal
-**out-of-sample holdout** *and* a **multiple-testing correction** (Bonferroni / FDR-BH,
-sized to the candidate universe) before any execution code is trusted. Exchange
-leaderboards are treated as survivorship-biased and never taken at face value.
+the **discovery + validation work comes first**, in a separate research harness
+(`edge_factory/`, `scripts/`). It is a manual research workflow, not a runtime gate
+wired into the orchestrator — `app/` does not import the research code. An edge is only
+taken seriously after it survives a real temporal **out-of-sample holdout** *and* a
+**multiple-testing correction** (Bonferroni / FDR-BH, sized to the candidate universe).
+Exchange leaderboards are treated as survivorship-biased and never taken at face value.
 
 ## Highlights
 
 - **Real-time ingestion** — sharded WebSocket client (Hyperliquid limits: 1000 subs/IP),
-  with a watchdog that reconnects on data silence (≥ 90 s) rather than just on socket death.
+  with a watchdog that reconnects on data silence (per-shard 180 s, global 1800 s) rather
+  than just on socket death.
 - **Faithful paper engine** — fills are simulated by *walking the real on-chain order book*
-  (`l2Book` snapshots), never via mid-price shortcuts. Paper PnL is meant to track live PnL
-  honestly from day one.
+  (`l2Book` snapshots), never via mid-price shortcuts, so paper fills stay close to what a
+  live order would have gotten.
 - **Risk layer** — liquidation-safe position sizing, drawdown circuit breaker, funding-sign
   gate, depth guard, and automatic muting of underperforming tracked wallets.
 - **Resilience** — boot preflight checks, a position reconciler that detects phantom closes,
@@ -78,11 +82,13 @@ backend/
 
 ## Engineering principles
 
-1. Live trading stays off by default and is enabled only after measured proof
-   (profit factor, max drawdown, minimum sample, beats baseline).
-2. Paper must be a truthful mirror of live — real order book, never mid-price.
-3. Validation = real out-of-sample holdout **with** multiple-testing correction.
-4. PnL is the exchange's reported `closedPnl`, never reconstructed.
+1. Paper-only by design — there is no live runner here. Live execution would only be
+   built after measured proof (profit factor, max drawdown, minimum sample, beats baseline).
+2. Paper aims to be a truthful mirror of a live fill — real order book, never mid-price.
+3. Validation = real out-of-sample holdout **with** multiple-testing correction, run as a
+   manual research workflow (not coupled into the orchestrator).
+4. On a live path, PnL would be taken from the exchange's reported `closedPnl`, not
+   reconstructed. In this paper repo, PnL is reconstructed from simulated fills.
 5. Watchdogs everywhere; no orphan positions; kill-switch; high-water-mark ratchet.
 
 ---

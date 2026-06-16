@@ -41,8 +41,8 @@ pour un produit qui n'existe pas encore.
 
 `hyperdex/backend/edge_factory/` — **application autonome**. Réutilise UNIQUEMENT
 `InfoClient` (HL API) du reste de HyperDex ; ne modifie rien d'autre. Pur-python pour le
-cœur, numpy autorisé pour les calculs lourds. Aucun lien avec le bot copy-trading HyperDex,
-a prior project ou a prior project.
+cœur, numpy autorisé pour les calculs lourds. Aucun lien avec le bot copy-trading HyperDex
+ni avec d'autres projets.
 
 L'Étage 3 (live) restera isolé : un edge ne touche du capital réel que par une décision
 humaine explicite après les 3 gates. **Pas d'auto-déploiement.**
@@ -266,5 +266,5 @@ désormais **univers réel d'emblée** aussi. Un edge trouvé hors de cet univer
 - **Pas de bot live « autonome »** qui trade tout seul sans surveillance (monitor + kill-switch obligatoires).
 - **Pas de baisse de seuils**, jamais, sur aucun des 3 gates.
 - **Pas de saut de gate** (jamais B→skip, jamais aller en live sur un edge non durci).
-- **Pas de Numerai comme mission** (gardé comme outil/débouché). **Pas de a prediction market.**
+- **Pas de Numerai comme mission** (gardé comme outil/débouché). **Pas de marchés de prédiction.**
 - **Pas de promesse de gains** (aucun edge prouvé à ce jour).

@@ -1,7 +1,7 @@
 [project]
 name = "hyperdex"
 version = "0.0.1"
-description = "Hyperliquid copy-trading bot — clean build applying a prior project lessons"
+description = "Hyperliquid copy-trading framework — paper-only research build"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115.0",

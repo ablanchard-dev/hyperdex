@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Métriques de performance pur-python — portées de a prior project + littérature quant.
+"""Métriques de performance pur-python — définitions canoniques + littérature quant.
 
 Toutes opèrent sur une liste de returns par-période (pas de prix). Définitions
 canoniques, zéro dépendance (statistics stdlib uniquement) → tourne Paris & Tokyo.
-maxDD reprend la math de a prior project backtest/metrics.py (max(peak-equity) sur l'equity
-cumulée). Sortino/Calmar = définitions standard (López de Prado / Bacon).
+maxDD = max(peak-equity) sur l'equity cumulée.
+Sortino/Calmar = définitions standard (López de Prado / Bacon).
 """
 import math
 import statistics

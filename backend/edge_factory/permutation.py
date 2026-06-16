@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Bar-permutation significance test — 4e gate du CRITIC (pur-python).
 
-Porté de a prior project (run_f2_permutation_test.py), réécrit sans numpy/pandas.
+Implémentation pur-python, sans numpy/pandas.
 
 Null hypothesis : la performance vient du HASARD, pas de la structure temporelle.
 On mélange les returns par-barre de chaque symbole (détruit l'autocorrélation /
@@ -10,7 +10,7 @@ on RE-TOURNE la stratégie, et on compare le Sharpe réel à la distribution des
 Sharpe mélangés. p_value = fraction des permutations qui battent le réel.
 
 C'est un null STRINGENT : un vrai edge structurel doit battre ~95% des tirages
-(p<0.05). Un Sharpe élevé qui échoue ici = data-mining (cf TSMOM a prior project p=0.88,
+(p<0.05). Un Sharpe élevé qui échoue ici = data-mining (cf TSMOM p=0.88,
 momentum J&T p=0.56). La stratégie est une callable `bars_by_symbol -> [returns]`.
 """
 import random

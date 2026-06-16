@@ -1,7 +1,7 @@
 """Tests pour adapter.py — l'interface VenueAdapter venue-agnostic.
 
 Le cœur de la factory ne connaît PAS la venue : il parle à un VenueAdapter
-abstrait. Chaque niche (a prediction market météo, HL small-cap, futures…) = une impl.
+abstrait. Chaque niche (marchés de prédiction, HL small-cap, futures…) = une impl.
 concrète. Contrat minimal Phase 1 : universe / history / fees / benchmark.
 
 Run: cd backend/edge_factory && ../../.venv/bin/python test_adapter.py
