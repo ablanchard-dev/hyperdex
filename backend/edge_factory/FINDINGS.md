@@ -61,7 +61,7 @@ une famille = une fabrique `make_*_hunter` dans `hunters.py`. Modules : `hunt.py
 | # | Angle | Verdict |
 |---|---|---|
 | 1-3 | Copy-trading HL (sélection-perf ×3) | beta/lottery/look-ahead, Spearman≈0 OOS |
-| 4 | ICT/SMC (a prior project) | no edge |
+| 4 | ICT/SMC | no edge |
 | 5-6 | Momentum/mean-rev/breakout per-symbol (HL+actions) | = beta déguisé |
 | 7 | New-listing momentum HL | univers trop mince (N=2) |
 | 8-11 | Cross-sectional 12m momentum (24→215 noms S&P600) | t=0.88-1.69, PBO 0.84, sous-seuil |

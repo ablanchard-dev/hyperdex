@@ -14,8 +14,6 @@ class Settings:
     hl_network: str = os.getenv("HL_NETWORK", "mainnet")
     database_url: str = os.getenv(
         "DATABASE_URL", "sqlite:///./data/hyperdex.db")
-    paper_only: bool = os.getenv("PAPER_ONLY", "true").lower() == "true"
-    live_enabled: bool = os.getenv("LIVE_ENABLED", "false").lower() == "true"
 
 
 def get_settings() -> Settings:

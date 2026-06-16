@@ -1,6 +1,6 @@
 """PnLTracker — state des paper positions + JSONL log append-only.
 
-Utilise PaperPosition (modèle perp riche). JSONL append-only (leçon a prior project :
+Utilise PaperPosition (modèle perp riche). JSONL append-only (règle :
 pas de re-dump monolithique → pas d'OOM).
 """
 from __future__ import annotations

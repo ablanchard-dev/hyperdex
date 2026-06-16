@@ -1,10 +1,10 @@
 """Tests pour permutation.py — 4e gate du CRITIC (bar-permutation significance).
 
-Porté du bar-permutation test de a prior project (run_f2_permutation_test.py). Principe :
+Bar-permutation test. Principe :
 re-tourner la STRATÉGIE sur des prix dont les returns par-barre sont mélangés
 (détruit la structure temporelle dont dépend le signal). Si l'edge vient vraiment
 de la structure, le Sharpe réel doit battre ~95% des permutations → p<0.05.
-Un Sharpe élevé qui ne survit PAS = data-mining (cf TSMOM a prior project p=0.88).
+Un Sharpe élevé qui ne survit PAS = data-mining (cf TSMOM p=0.88).
 
 Run: cd backend/edge_factory && ../../.venv/bin/python test_permutation.py
 """

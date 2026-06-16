@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      # app + core unit tests (import `app.*`, run from backend/)
+      - name: Run app tests
+        working-directory: backend
+        run: python -m pytest tests/ -q
+
+      # edge_factory uses bare-module imports, so it runs from its own dir
+      - name: Run edge_factory tests
+        working-directory: backend/edge_factory
+        run: python -m pytest -q

@@ -2,8 +2,8 @@
 """VenueAdapter — interface d'exécution/données venue-agnostic de l'edge-factory.
 
 Le cœur (recherche + CRITIC) ne connaît PAS la venue. Chaque niche est une impl.
-concrète : a prediction market-météo (infra a prior project), HL small-cap (infra HyperDex),
-futures (costs a broker a prior project)… Ajouter une venue = écrire un adapter, PAS toucher
+concrète : marchés de prédiction, HL small-cap (infra HyperDex), futures…
+Ajouter une venue = écrire un adapter, PAS toucher
 le cœur. Contrat minimal Phase 1 : universe / history / fees / benchmark.
 Exécution live (place_order/positions) = ajoutée en phase exécution.
 """

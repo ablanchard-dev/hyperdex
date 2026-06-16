@@ -3,7 +3,7 @@
 
 Le signal à la barre i n'utilise QUE les barres 0..i (passé), et la position
 gagne le return [i, i+1]. Garanti sans fuite (test no-look-ahead prefix).
-Backtest minimal Phase 1 (le vrai moteur institutionnel = portage a prior project).
+Backtest minimal Phase 1 (un moteur plus complet reste à construire).
 """
 from pathlib import Path
 import statistics

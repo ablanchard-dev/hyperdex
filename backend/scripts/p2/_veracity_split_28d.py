@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Pilier 1 — Test de véracité OOS train/test 28j (univers COMPLET).
 
-Le test qui a démasqué le faux edge a prediction market (rating 44k wallets →
-corrélation +0.09, top quartile = pire). On le rejoue sur HyperLiquid avec
+Le même test qui, sur un projet antérieur, avait démasqué un faux edge basé sur
+le rating de wallets (corrélation +0.09, top quartile = pire). On le rejoue sur
+HyperLiquid avec
 règle de décision PRÉ-ENREGISTRÉE.
 
 Méthode :

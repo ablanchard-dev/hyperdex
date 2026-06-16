@@ -47,7 +47,7 @@ BACKFILLER_STATE_PATH = PAPER_DIR / "fill_backfiller_state.json"
 # Sharpe 0 = aucun filtre Sharpe (tous Bonferroni passent z>4.34 déjà)
 MIN_SHARPE = 0.0
 
-# Sizing R-based (doctrine a prior project, herité durci) :
+# Sizing R-based (doctrine de risk-sizing héritée, durcie) :
 # - PAPER_CAPITAL = label opérateur (NANO=$300)
 # - R_PCT = 2% du capital risqué par position (margin)
 # - DEFAULT_LEVERAGE = levier perp HL
