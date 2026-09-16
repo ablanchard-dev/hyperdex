@@ -30,10 +30,13 @@ Exchange leaderboards are treated as survivorship-biased and never taken at face
 - **Faithful paper engine** — fills are simulated by *walking the real on-chain order book*
   (`l2Book` snapshots), never via mid-price shortcuts, so paper fills stay close to what a
   live order would have gotten.
-- **Risk layer** — liquidation-safe position sizing, drawdown circuit breaker, funding-sign
-  gate, depth guard, and automatic muting of underperforming tracked wallets.
-- **Resilience** — boot preflight checks, a position reconciler that detects phantom closes,
-  and a fill backfiller that recovers fills missed during WebSocket drops.
+- **Risk layer** — per-coin liquidation price (Hyperliquid maintenance margin) logged on
+  every open with a tight-distance warning, a drawdown breaker that halves new
+  position sizes past 10% drawdown, funding-sign gate, depth guard, and automatic muting
+  of underperforming or HFT-like tracked wallets.
+- **Resilience** — boot preflight checks, a position reconciler that detects closes the
+  WebSocket missed (and exits them by walking the book, like any other paper fill), and a
+  fill backfiller that recovers fills missed during WebSocket drops.
 - **Data engineering at scale** — historical analysis pipeline over Hyperliquid event data
   on AWS S3 (boto3 / IAM), with memory-bounded, checkpoint-resumable processing for
   multi-gigabyte datasets, deployed multi-region (Paris + Tokyo Lightsail) for latency.
@@ -89,7 +92,17 @@ backend/
    manual research workflow (not coupled into the orchestrator).
 4. On a live path, PnL would be taken from the exchange's reported `closedPnl`, not
    reconstructed. In this paper repo, PnL is reconstructed from simulated fills.
-5. Watchdogs everywhere; no orphan positions; kill-switch; high-water-mark ratchet.
+5. Watchdogs on every stream; no orphan positions; high-water-mark ratchet; clean
+   shutdown on SIGINT/SIGTERM.
+
+## Known limitations
+
+- **Paper positions are never liquidated.** A copy closes when the tracked trader
+  closes (or when the reconciler sees the position gone). If the trader runs lower
+  leverage than the copy (5x by default), a move that would liquidate the copy is ridden
+  out in paper, so paper PnL is optimistic on those trades. The liquidation price is
+  computed and logged, not enforced.
+- No live runner, and no claim of profitability.
 
 ---
 
