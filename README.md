@@ -15,8 +15,8 @@ live engine on top of a strategy that only looks good in-sample.
 ## Why it's built this way
 
 Most retail trading bots are built first and validated never. HyperDex inverts that:
-the **discovery + validation work comes first**, in a separate research harness
-(`edge_factory/`, `scripts/`). It is a manual research workflow, not a runtime gate
+the **discovery + validation work comes first**, in the research scripts (`scripts/`) and
+the standalone [edge-factory](https://github.com/ablanchard-dev/edge-factory) harness. It is a manual research workflow, not a runtime gate
 wired into the orchestrator — `app/` does not import the research code. An edge is only
 taken seriously after it survives a real temporal **out-of-sample holdout** *and* a
 **multiple-testing correction** (Bonferroni / FDR-BH, sized to the candidate universe).
@@ -79,7 +79,6 @@ backend/
 ├── scripts/                 # discovery + validation research pipeline
 │   ├── p1/, p1_6/           # candidate discovery, out-of-sample holdout
 │   └── p2/                  # multiple-testing correction (DSR/PBO), paper launch
-├── edge_factory/            # standalone edge-validation harness
 └── tests/                   # unit tests on the critical bricks
 ```
 
