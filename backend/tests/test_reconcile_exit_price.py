@@ -45,7 +45,12 @@ class _Tracker:
 
 
 def _close(is_long: bool, size: float):
+    from app.services.paper.position import PaperPosition
     tracker = _Tracker(size)
+    # levier 1 : liquidation impossible, ces tests ne portent que sur la sortie au VWAP
+    tracker.pos = PaperPosition(trader="0xabc", coin="BTC", is_long=is_long, size=size,
+                                entry_price=100.0, leverage=1.0, open_ts_ms=0,
+                                open_fee_usd=0.0, open_fill_id="x")
     rec = PositionReconciler(tracker, _Info(), verbose=False)
     asyncio.run(rec._reconcile_one("0xabc", "BTC", is_long))
     return tracker.closed
@@ -60,3 +65,61 @@ def test_long_phantom_close_sells_into_the_bids_not_the_mid():
 def test_short_phantom_close_buys_from_the_asks_not_the_mid():
     closed = _close(is_long=False, size=1.0)
     assert closed["exit_price"] == 101.0
+
+
+# --- Liquidation : la copie peut sauter alors que le trader copie tient ------------
+# Avant, liquidation_price n'etait que LOGUE : une copie a 5x traversait en paper un
+# mouvement qui l'aurait liquidee en live, et le PnL paper restait optimiste.
+
+from app.services.paper.position import PaperPosition
+
+
+class _HoldingInfo(_Info):
+    def __init__(self, book):
+        self.book = book
+
+    def user_state(self, addr):  # le trader copie TIENT toujours sa position
+        return {"assetPositions": [{"position": {"coin": "BTC", "szi": "1.0"}},
+                                   {"position": {"coin": "ETH", "szi": "-1.0"}}]}
+
+    def l2_snapshot(self, coin):
+        return self.book
+
+
+def _book(bid, ask):
+    return {"levels": [[{"px": str(bid), "sz": "10"}], [{"px": str(ask), "sz": "10"}]]}
+
+
+def _run(pos, book):
+    tracker = _Tracker(1.0)
+    tracker.pos = pos
+    rec = PositionReconciler(tracker, _HoldingInfo(book), verbose=False)
+    asyncio.run(rec._reconcile_one("0xabc", pos.coin, pos.is_long))
+    return tracker.closed, rec.stats
+
+
+def _pos(is_long):
+    # entry 100, 5x, maint 5% -> liq long 85, liq short 115
+    return PaperPosition(trader="0xabc", coin="BTC" if is_long else "ETH", is_long=is_long,
+                         size=1.0, entry_price=100.0, leverage=5.0, open_ts_ms=0,
+                         open_fee_usd=0.0, open_fill_id="x", maint_margin_pct=0.05)
+
+
+def test_long_liquidated_when_bid_crosses_liquidation_price_even_if_trader_holds():
+    closed, stats = _run(_pos(True), _book(84.0, 84.5))
+    assert closed is not None, "la copie doit etre liquidee"
+    assert abs(closed["exit_price"] - 85.0) < 1e-9
+    assert closed["exit_fill_id"].startswith("liquidation:")
+    assert stats["liquidations"] == 1
+
+
+def test_short_liquidated_when_ask_crosses_liquidation_price():
+    closed, _ = _run(_pos(False), _book(115.5, 116.0))
+    assert closed is not None
+    assert abs(closed["exit_price"] - 115.0) < 1e-9
+
+
+def test_no_liquidation_above_the_threshold_and_trader_still_holds():
+    closed, stats = _run(_pos(True), _book(90.0, 90.5))
+    assert closed is None
+    assert stats["liquidations"] == 0

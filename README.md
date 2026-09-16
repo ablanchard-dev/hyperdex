@@ -30,8 +30,8 @@ Exchange leaderboards are treated as survivorship-biased and never taken at face
 - **Faithful paper engine** — fills are simulated by *walking the real on-chain order book*
   (`l2Book` snapshots), never via mid-price shortcuts, so paper fills stay close to what a
   live order would have gotten.
-- **Risk layer** — per-coin liquidation price (Hyperliquid maintenance margin) logged on
-  every open with a tight-distance warning, a drawdown breaker that halves new
+- **Risk layer** — per-coin liquidation price (Hyperliquid maintenance margin), enforced
+  on every reconcile cycle and flagged on open when tight, a drawdown breaker that halves new
   position sizes past 10% drawdown, funding-sign gate, depth guard, and automatic muting
   of underperforming or HFT-like tracked wallets.
 - **Resilience** — boot preflight checks, a position reconciler that detects closes the
@@ -96,11 +96,11 @@ backend/
 
 ## Known limitations
 
-- **Paper positions are never liquidated.** A copy closes when the tracked trader
-  closes (or when the reconciler sees the position gone). If the trader runs lower
-  leverage than the copy (5x by default), a move that would liquidate the copy is ridden
-  out in paper, so paper PnL is optimistic on those trades. The liquidation price is
-  computed and logged, not enforced.
+- **Liquidation is checked every 5 minutes, not continuously.** Each reconcile cycle
+  closes a copy at its liquidation price when the best exit price has crossed it, even if
+  the tracked trader (often on lower leverage) still holds. A wick that crosses and
+  recovers between two cycles is still missed, so paper PnL stays slightly optimistic on
+  highly leveraged copies.
 - No live runner, and no claim of profitability.
 
 ---

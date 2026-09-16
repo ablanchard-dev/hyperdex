@@ -39,6 +39,7 @@ class PositionReconciler:
             reconcile_cycles=0,
             wallets_checked=0,
             phantom_closes=0,
+            liquidations=0,
             errors=0,
         )
 
@@ -68,19 +69,60 @@ class PositionReconciler:
                     continue
         return positions
 
-    async def _exit_price(self, coin: str, is_long: bool, size: float) -> float | None:
-        """VWAP de sortie en marchant le carnet l2_snapshot (None si carnet vide)."""
+    async def _book(self, coin: str) -> dict | None:
         loop = asyncio.get_event_loop()
         try:
-            book = await loop.run_in_executor(
-                None, self.info.l2_snapshot, coin)
+            return await loop.run_in_executor(None, self.info.l2_snapshot, coin)
         except Exception:
             return None
+
+    @staticmethod
+    def _exit_vwap(book: dict | None, is_long: bool, size: float) -> float | None:
+        """VWAP de sortie en marchant le carnet (None si carnet vide)."""
         vwap, filled, _ = FillSimulator().compute_vwap(book or {}, "A" if is_long else "B", size)
         return vwap if filled > 0 else None
 
+    def _liquidate_if_crossed(self, trader: str, coin: str, is_long: bool, pos: Any,
+                              book: dict | None) -> bool:
+        """Ferme au prix de liquidation si le meilleur prix de sortie l'a franchi.
+
+        Avant, liquidation_price n'etait que logue : une copie a 5x traversait en paper un
+        mouvement qui la liquide en live, tant que le trader copie (moins leve) tenait.
+        ponytail: controle a chaque cycle (5 min), pas en continu ; une meche entre deux
+        cycles passe encore. Flux de prix continu si le biais residuel compte.
+        """
+        levels = (book or {}).get("levels") or [[], []]
+        side = levels[0] if is_long else (levels[1] if len(levels) > 1 else [])
+        if not side:
+            return False
+        try:
+            best = float(side[0].get("px", 0))
+        except Exception:
+            return False
+        liq = pos.liquidation_price
+        if best <= 0 or not (best <= liq if is_long else best >= liq):
+            return False
+        ts_ms = int(time.time() * 1000)
+        res = self.tracker.close(
+            trader=trader, coin=coin, is_long=is_long,
+            exit_price=liq, exit_ts_ms=ts_ms,
+            exit_fee_usd=pos.size * liq * FillSimulator.DEFAULT_FEE_RATE,
+            exit_fill_id=f"liquidation:{ts_ms}",
+        )
+        if res is not None:
+            self.stats["liquidations"] += 1
+            self._log(f"LIQUIDATION {trader[:14]} {coin} {'L' if is_long else 'S'} "
+                      f"liq=${liq:.4f} best=${best:.4f} net=${res[0]:+.2f}")
+        return True
+
     async def _reconcile_one(self, trader: str, coin: str, is_long: bool):
-        """Vérifie 1 position. Si wallet n'a plus la position côté API → close."""
+        """Vérifie 1 position : liquidation d'abord, puis wallet copié qui n'a plus la position."""
+        pos = self.tracker.get(trader, coin, is_long)
+        if pos is None:
+            return
+        book = await self._book(coin)
+        if self._liquidate_if_crossed(trader, coin, is_long, pos, book):
+            return
         api_pos = await self._fetch_wallet_positions(trader)
         if api_pos is None:
             self.stats["errors"] += 1
@@ -94,14 +136,11 @@ class PositionReconciler:
         if wallet_still_has_same_side:
             return  # position toujours ouverte côté wallet, on garde
         # Wallet n'a plus cette position → close phantom
-        pos = self.tracker.get(trader, coin, is_long)
-        if pos is None:
-            return
         # Sortie en marchant le carnet comme tout fill paper (long => vend dans les bids,
         # short => achete dans les asks), frais taker du simulateur. Le mid ignorait spread
         # et profondeur : chaque phantom close gonflait le PnL. compute_vwap et pas
         # simulate() : une position fantome doit sortir meme sur un carnet mince.
-        exit_price = await self._exit_price(coin, is_long, pos.size)
+        exit_price = self._exit_vwap(book, is_long, pos.size)
         if exit_price is None or exit_price <= 0:
             self._log(f"PHANTOM_CLOSE {trader[:14]} {coin} "
                       f"{'LONG' if is_long else 'SHORT'} : no book, skip cycle")
