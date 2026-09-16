@@ -26,7 +26,7 @@ jobs:
         working-directory: backend
         run: python -m pytest tests/ -q
 
-      # edge_factory uses bare-module imports, so it runs from its own dir
-      - name: Run edge_factory tests
-        working-directory: backend/edge_factory
-        run: python -m pytest -q
+      # DSR / PBO statistics used by the research scripts (bare-module imports)
+      - name: Run DSR/PBO tests
+        working-directory: backend/scripts/p2
+        run: python -m pytest -q test_dsr_pbo.py
