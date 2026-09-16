@@ -9,7 +9,7 @@ wallets du shard émettent encore).
 
 Solution : toutes les RECONCILE_INTERVAL_S secondes, fetch user_state pour
 chaque wallet avec position trackée. Si la position n'existe plus côté API
-ou que szi a changé de signe → close manuel avec mark price actuel.
+ou que szi a changé de signe → close manuel au VWAP du carnet actuel (côté sortie).
 
 Coût API : N positions × 2 weight = N×2 weight par cycle. À 20 positions
 max et cycle 5min = 8 weight/min. Budget HL 1200/min = négligeable.
@@ -20,6 +20,7 @@ import asyncio
 import time
 from typing import Any
 
+from app.services.paper.fill_simulator import FillSimulator
 from app.services.paper.pnl_tracker import PnLTracker
 
 
@@ -67,28 +68,16 @@ class PositionReconciler:
                     continue
         return positions
 
-    async def _mid_price(self, coin: str) -> float | None:
-        """Best-effort mid price via l2_snapshot."""
+    async def _exit_price(self, coin: str, is_long: bool, size: float) -> float | None:
+        """VWAP de sortie en marchant le carnet l2_snapshot (None si carnet vide)."""
         loop = asyncio.get_event_loop()
         try:
             book = await loop.run_in_executor(
                 None, self.info.l2_snapshot, coin)
         except Exception:
             return None
-        levels = book.get("levels") or [[], []]
-        if len(levels) < 2:
-            return None
-        bids, asks = levels[0], levels[1]
-        if not bids or not asks:
-            return None
-        try:
-            best_bid = float(bids[0].get("px", 0))
-            best_ask = float(asks[0].get("px", 0))
-            if best_bid > 0 and best_ask > 0:
-                return (best_bid + best_ask) / 2.0
-        except Exception:
-            pass
-        return None
+        vwap, filled, _ = FillSimulator().compute_vwap(book or {}, "A" if is_long else "B", size)
+        return vwap if filled > 0 else None
 
     async def _reconcile_one(self, trader: str, coin: str, is_long: bool):
         """Vérifie 1 position. Si wallet n'a plus la position côté API → close."""
@@ -105,21 +94,23 @@ class PositionReconciler:
         if wallet_still_has_same_side:
             return  # position toujours ouverte côté wallet, on garde
         # Wallet n'a plus cette position → close phantom
-        mid = await self._mid_price(coin)
-        if mid is None or mid <= 0:
-            self._log(f"PHANTOM_CLOSE {trader[:14]} {coin} "
-                      f"{'LONG' if is_long else 'SHORT'} : no mid price, skip cycle")
-            return
-        # close au mid + simul fee 0.025% taker
-        # Le tracker.close marque le PnL avec ce prix.
-        ts_ms = int(time.time() * 1000)
         pos = self.tracker.get(trader, coin, is_long)
         if pos is None:
             return
-        fee_estimate = pos.size * mid * 0.00025
+        # Sortie en marchant le carnet comme tout fill paper (long => vend dans les bids,
+        # short => achete dans les asks), frais taker du simulateur. Le mid ignorait spread
+        # et profondeur : chaque phantom close gonflait le PnL. compute_vwap et pas
+        # simulate() : une position fantome doit sortir meme sur un carnet mince.
+        exit_price = await self._exit_price(coin, is_long, pos.size)
+        if exit_price is None or exit_price <= 0:
+            self._log(f"PHANTOM_CLOSE {trader[:14]} {coin} "
+                      f"{'LONG' if is_long else 'SHORT'} : no book, skip cycle")
+            return
+        ts_ms = int(time.time() * 1000)
+        fee_estimate = pos.size * exit_price * FillSimulator.DEFAULT_FEE_RATE
         res = self.tracker.close(
             trader=trader, coin=coin, is_long=is_long,
-            exit_price=mid, exit_ts_ms=ts_ms,
+            exit_price=exit_price, exit_ts_ms=ts_ms,
             exit_fee_usd=fee_estimate,
             exit_fill_id=f"phantom_close:{ts_ms}",
         )
@@ -128,7 +119,7 @@ class PositionReconciler:
             self.stats["phantom_closes"] += 1
             tag = "WIN " if net_pnl > 0 else "LOSS"
             self._log(f"PHANTOM_CLOSE {tag} {trader[:14]} {coin} "
-                      f"{'L' if is_long else 'S'} mid=${mid:.4f} "
+                      f"{'L' if is_long else 'S'} exit=${exit_price:.4f} "
                       f"net=${net_pnl:+.2f} (total=${self.tracker.total_pnl:+.2f})")
 
     async def run(self):
