@@ -126,7 +126,7 @@ def test_no_liquidation_above_the_threshold_and_trader_still_holds():
 
 
 # --- Surveillance continue : une meche entre deux cycles de 5 min ne passe plus ------
-# HL liquide sur le prix mark ; all_mids couvre toutes les coins en UN appel (poids 2).
+# HL liquide sur le prix mark ; metaAndAssetCtxs couvre toutes les coins en UN appel (poids 20).
 
 class _OpenTracker(_Tracker):
     def __init__(self, positions):
@@ -142,7 +142,7 @@ class _OpenTracker(_Tracker):
         return (0.0, 0.0, 0.0)
 
 
-def test_liquidation_watch_closes_on_mid_cross_without_waiting_for_the_cycle():
+def test_liquidation_watch_closes_on_mark_cross_without_waiting_for_the_cycle():
     tracker = _OpenTracker([_pos(True), _pos(False)])  # BTC long liq 85, ETH short liq 115
     rec = PositionReconciler(tracker, _HoldingInfo(_book(90, 91)), verbose=False)
     n = rec.check_liquidations({"BTC": "84.9", "ETH": "110"})
@@ -152,9 +152,23 @@ def test_liquidation_watch_closes_on_mid_cross_without_waiting_for_the_cycle():
     assert rec.stats["liquidations"] == 1
 
 
-def test_liquidation_watch_ignores_missing_or_bad_mids():
+def test_liquidation_watch_ignores_missing_or_bad_marks():
     tracker = _OpenTracker([_pos(True)])
     rec = PositionReconciler(tracker, _HoldingInfo(_book(90, 91)), verbose=False)
     assert rec.check_liquidations({}) == 0
     assert rec.check_liquidations({"BTC": "nan?"}) == 0
     assert tracker.closed_all == []
+
+
+# --- Prix MARK, pas mid : c'est sur le mark que Hyperliquid liquide -------------------
+def test_marks_are_read_from_meta_and_asset_ctxs_by_universe_index():
+    meta = {"universe": [{"name": "BTC"}, {"name": "ETH"}]}
+    ctxs = [{"markPx": "100.5", "midPx": "99"}, {"markPx": "7.25", "midPx": "7"}]
+    assert PositionReconciler.marks_from_ctxs([meta, ctxs]) == {"BTC": 100.5, "ETH": 7.25}
+
+
+def test_marks_ignore_malformed_entries():
+    meta = {"universe": [{"name": "BTC"}, {"name": "X"}, {"name": "Y"}]}
+    ctxs = [{"markPx": "100"}, {"midPx": "1"}, {"markPx": "nope"}]
+    assert PositionReconciler.marks_from_ctxs([meta, ctxs]) == {"BTC": 100.0}
+    assert PositionReconciler.marks_from_ctxs(None) == {}

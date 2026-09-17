@@ -28,7 +28,7 @@ class PositionReconciler:
     """Loop async qui reconcile tracker vs API HL."""
 
     RECONCILE_INTERVAL_S = 300.0  # 5 min
-    LIQ_WATCH_INTERVAL_S = 5.0
+    LIQ_WATCH_INTERVAL_S = 10.0
     POSITION_TOLERANCE_SZ = 1e-8
 
     def __init__(self, tracker: PnLTracker, info: Any, verbose: bool = True):
@@ -89,7 +89,7 @@ class PositionReconciler:
 
         Avant, liquidation_price n'etait que logue : une copie a 5x traversait en paper un
         mouvement qui la liquide en live, tant que le trader copie (moins leve) tenait.
-        En continu, c'est run_liquidation_watch (mids toutes les 5 s) qui attrape les meches ;
+        En continu, c'est run_liquidation_watch (prix mark toutes les 10 s) qui attrape les meches ;
         ce controle au carnet reste le filet du cycle de 5 min.
         """
         levels = (book or {}).get("levels") or [[], []]
@@ -165,22 +165,39 @@ class PositionReconciler:
                       f"{'L' if is_long else 'S'} exit=${exit_price:.4f} "
                       f"net=${net_pnl:+.2f} (total=${self.tracker.total_pnl:+.2f})")
 
-    def check_liquidations(self, mids: dict) -> int:
-        """Liquide toute position dont le mid a franchi le prix de liquidation. Rend le nombre."""
+    def check_liquidations(self, marks: dict) -> int:
+        """Liquide toute position dont le prix (mark) a franchi le prix de liquidation. Rend le nombre."""
         n = 0
         for (trader, coin, is_long), pos in list(self.tracker.open_positions.items()):
             try:
-                px = float(mids[coin])
+                px = float(marks[coin])
             except (KeyError, TypeError, ValueError):
                 continue
             if self._liquidate_at(trader, coin, is_long, pos, px):
                 n += 1
         return n
 
+    @staticmethod
+    def marks_from_ctxs(payload: Any) -> dict[str, float]:
+        """{coin: markPx} depuis metaAndAssetCtxs = [meta, ctxs], alignes par index d'univers."""
+        try:
+            meta, ctxs = payload
+            names = [a.get("name") for a in meta.get("universe", [])]
+        except (TypeError, ValueError, AttributeError):
+            return {}
+        out: dict[str, float] = {}
+        for name, ctx in zip(names, ctxs):
+            try:
+                out[name] = float(ctx["markPx"])
+            except (KeyError, TypeError, ValueError):
+                continue
+        return out
+
     async def run_liquidation_watch(self):
-        """HL liquide sur le mark : all_mids (1 appel, poids 2, toutes les coins) toutes les
-        LIQ_WATCH_INTERVAL_S. Avant, une meche entre deux cycles de 5 min ne liquidait rien.
-        ponytail: mid ~ mark ; flux WS allMids si 5 s laisse encore passer des meches."""
+        """HL liquide sur le prix MARK : metaAndAssetCtxs (1 appel, poids 20, toutes les coins)
+        toutes les LIQ_WATCH_INTERVAL_S. Avant, une meche entre deux cycles de 5 min ne liquidait
+        rien, puis le mid servait d'approximation. 10 s = 120 poids/min sur 1200.
+        ponytail: flux WS activeAssetCtx si 10 s laisse encore passer des meches."""
         loop = asyncio.get_event_loop()
         while not self._stop.is_set():
             try:
@@ -191,8 +208,8 @@ class PositionReconciler:
             if not self.tracker.open_positions:
                 continue
             try:
-                mids = await loop.run_in_executor(None, self.info.all_mids)
-                self.check_liquidations(mids or {})
+                payload = await loop.run_in_executor(None, self.info.meta_and_asset_ctxs)
+                self.check_liquidations(self.marks_from_ctxs(payload))
             except Exception as e:
                 self.stats["errors"] += 1
                 self._log(f"liquidation watch: {type(e).__name__}: {e}")
