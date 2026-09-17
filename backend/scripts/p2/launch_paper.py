@@ -317,12 +317,13 @@ async def main():
     funding_task = asyncio.create_task(funding.run())
     summary_task = asyncio.create_task(summary_loop())
     reconcile_task = asyncio.create_task(reconciler.run())
+    liq_watch_task = asyncio.create_task(reconciler.run_liquidation_watch())
     backfill_task = asyncio.create_task(backfiller.run())
     stop_task = asyncio.create_task(stop_event.wait())
 
     done, pending = await asyncio.wait(
         {listener_task, funding_task, summary_task, reconcile_task,
-         backfill_task, stop_task},
+         liq_watch_task, backfill_task, stop_task},
         return_when=asyncio.FIRST_COMPLETED,
     )
     log("Une tâche s'est terminée — shutdown")
