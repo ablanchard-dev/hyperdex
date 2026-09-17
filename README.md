@@ -31,7 +31,7 @@ Exchange leaderboards are treated as survivorship-biased and never taken at face
   (`l2Book` snapshots), never via mid-price shortcuts, so paper fills stay close to what a
   live order would have gotten.
 - **Risk layer** — per-coin liquidation price (Hyperliquid maintenance margin), enforced
-  on every reconcile cycle and flagged on open when tight, a drawdown breaker that halves new
+  every 5 seconds from all mid prices (one API call for every coin) and flagged on open when tight, a drawdown breaker that halves new
   position sizes past 10% drawdown, funding-sign gate, depth guard, and automatic muting
   of underperforming or HFT-like tracked wallets.
 - **Resilience** — boot preflight checks, a position reconciler that detects closes the
@@ -96,11 +96,10 @@ backend/
 
 ## Known limitations
 
-- **Liquidation is checked every 5 minutes, not continuously.** Each reconcile cycle
-  closes a copy at its liquidation price when the best exit price has crossed it, even if
-  the tracked trader (often on lower leverage) still holds. A wick that crosses and
-  recovers between two cycles is still missed, so paper PnL stays slightly optimistic on
-  highly leveraged copies.
+- **Liquidation is watched every 5 seconds on mid prices**, not tick by tick. A copy is closed
+  at its liquidation price as soon as the mid crosses it, even if the tracked trader (often on
+  lower leverage) still holds. A wick shorter than 5 seconds can still be missed, and Hyperliquid
+  liquidates on the mark price, which the mid only approximates.
 - No live runner, and no claim of profitability.
 
 ---

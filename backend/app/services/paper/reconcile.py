@@ -28,6 +28,7 @@ class PositionReconciler:
     """Loop async qui reconcile tracker vs API HL."""
 
     RECONCILE_INTERVAL_S = 300.0  # 5 min
+    LIQ_WATCH_INTERVAL_S = 5.0
     POSITION_TOLERANCE_SZ = 1e-8
 
     def __init__(self, tracker: PnLTracker, info: Any, verbose: bool = True):
@@ -88,8 +89,8 @@ class PositionReconciler:
 
         Avant, liquidation_price n'etait que logue : une copie a 5x traversait en paper un
         mouvement qui la liquide en live, tant que le trader copie (moins leve) tenait.
-        ponytail: controle a chaque cycle (5 min), pas en continu ; une meche entre deux
-        cycles passe encore. Flux de prix continu si le biais residuel compte.
+        En continu, c'est run_liquidation_watch (mids toutes les 5 s) qui attrape les meches ;
+        ce controle au carnet reste le filet du cycle de 5 min.
         """
         levels = (book or {}).get("levels") or [[], []]
         side = levels[0] if is_long else (levels[1] if len(levels) > 1 else [])
@@ -99,8 +100,11 @@ class PositionReconciler:
             best = float(side[0].get("px", 0))
         except Exception:
             return False
+        return self._liquidate_at(trader, coin, is_long, pos, best)
+
+    def _liquidate_at(self, trader: str, coin: str, is_long: bool, pos: Any, best: float) -> bool:
         liq = pos.liquidation_price
-        if best <= 0 or not (best <= liq if is_long else best >= liq):
+        if not best > 0 or not (best <= liq if is_long else best >= liq):
             return False
         ts_ms = int(time.time() * 1000)
         res = self.tracker.close(
@@ -160,6 +164,38 @@ class PositionReconciler:
             self._log(f"PHANTOM_CLOSE {tag} {trader[:14]} {coin} "
                       f"{'L' if is_long else 'S'} exit=${exit_price:.4f} "
                       f"net=${net_pnl:+.2f} (total=${self.tracker.total_pnl:+.2f})")
+
+    def check_liquidations(self, mids: dict) -> int:
+        """Liquide toute position dont le mid a franchi le prix de liquidation. Rend le nombre."""
+        n = 0
+        for (trader, coin, is_long), pos in list(self.tracker.open_positions.items()):
+            try:
+                px = float(mids[coin])
+            except (KeyError, TypeError, ValueError):
+                continue
+            if self._liquidate_at(trader, coin, is_long, pos, px):
+                n += 1
+        return n
+
+    async def run_liquidation_watch(self):
+        """HL liquide sur le mark : all_mids (1 appel, poids 2, toutes les coins) toutes les
+        LIQ_WATCH_INTERVAL_S. Avant, une meche entre deux cycles de 5 min ne liquidait rien.
+        ponytail: mid ~ mark ; flux WS allMids si 5 s laisse encore passer des meches."""
+        loop = asyncio.get_event_loop()
+        while not self._stop.is_set():
+            try:
+                await asyncio.wait_for(self._stop.wait(), timeout=self.LIQ_WATCH_INTERVAL_S)
+                break
+            except asyncio.TimeoutError:
+                pass
+            if not self.tracker.open_positions:
+                continue
+            try:
+                mids = await loop.run_in_executor(None, self.info.all_mids)
+                self.check_liquidations(mids or {})
+            except Exception as e:
+                self.stats["errors"] += 1
+                self._log(f"liquidation watch: {type(e).__name__}: {e}")
 
     async def run(self):
         self._log(f"started, interval={self.RECONCILE_INTERVAL_S:.0f}s")

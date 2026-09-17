@@ -123,3 +123,38 @@ def test_no_liquidation_above_the_threshold_and_trader_still_holds():
     closed, stats = _run(_pos(True), _book(90.0, 90.5))
     assert closed is None
     assert stats["liquidations"] == 0
+
+
+# --- Surveillance continue : une meche entre deux cycles de 5 min ne passe plus ------
+# HL liquide sur le prix mark ; all_mids couvre toutes les coins en UN appel (poids 2).
+
+class _OpenTracker(_Tracker):
+    def __init__(self, positions):
+        self.open_positions = {(p.trader, p.coin, p.is_long): p for p in positions}
+        self.closed_all = []
+
+    def get(self, trader, coin, is_long):
+        return self.open_positions.get((trader, coin, is_long))
+
+    def close(self, **kw):
+        self.closed_all.append(kw)
+        self.open_positions.pop((kw["trader"], kw["coin"], kw["is_long"]), None)
+        return (0.0, 0.0, 0.0)
+
+
+def test_liquidation_watch_closes_on_mid_cross_without_waiting_for_the_cycle():
+    tracker = _OpenTracker([_pos(True), _pos(False)])  # BTC long liq 85, ETH short liq 115
+    rec = PositionReconciler(tracker, _HoldingInfo(_book(90, 91)), verbose=False)
+    n = rec.check_liquidations({"BTC": "84.9", "ETH": "110"})
+    assert n == 1
+    assert [c["coin"] for c in tracker.closed_all] == ["BTC"]
+    assert abs(tracker.closed_all[0]["exit_price"] - 85.0) < 1e-9
+    assert rec.stats["liquidations"] == 1
+
+
+def test_liquidation_watch_ignores_missing_or_bad_mids():
+    tracker = _OpenTracker([_pos(True)])
+    rec = PositionReconciler(tracker, _HoldingInfo(_book(90, 91)), verbose=False)
+    assert rec.check_liquidations({}) == 0
+    assert rec.check_liquidations({"BTC": "nan?"}) == 0
+    assert tracker.closed_all == []
