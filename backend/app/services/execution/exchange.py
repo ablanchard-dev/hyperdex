@@ -14,6 +14,7 @@ Architecture :
 from __future__ import annotations
 
 import asyncio
+import os
 import random
 import time
 from dataclasses import dataclass
@@ -72,6 +73,42 @@ class LatencyModel:
 # ExchangeClient
 # =====================================================================
 
+#: La variable d'environnement qui autorise le mode live, et l'aveu qu'elle doit porter.
+#: La valeur est une phrase qu'on n'écrit ni par accident, ni par habitude — `=1` est ce qu'on
+#: tape sans réfléchir, et c'est précisément ce qu'on ne veut pas voir ouvrir une porte
+#: qui dépense de l'argent réel.
+LIVE_ENV = "HYPERDEX_ALLOW_LIVE"
+LIVE_AVEU = "je-sais-que-ce-sont-de-vrais-ordres"
+
+
+def _exiger_l_aveu_live(dry_run: bool) -> None:
+    """Le mode live demande un geste explicite À L'EXÉCUTION, pas seulement du code.
+
+    Pourquoi ça existe. Le README disait, honnêtement : la branche live « n'est câblée à aucun
+    point d'entrée **et n'est protégée par aucun garde-fou à l'exécution** ».
+    `tests/test_paper_only_is_guarded.py` tient la première moitié en lisant les points d'entrée
+    à l'AST. La seconde était un aveu sans réponse.
+
+    Ce que ça laissait ouvert : une garde statique juge les points d'entrée du dépôt. Un script
+    neuf, un notebook, un `python -c`, une session d'agent qui veut « juste essayer » ne passent
+    devant aucune d'elles. Une garde qui vit dans les tests protège le dépôt ; elle ne protège
+    pas la machine.
+
+    Fail-closed, et placé dans le constructeur parce que c'est le seul passage obligé de toute
+    voie live. Le mode paper n'est jamais gêné : une protection qui rend la recherche pénible
+    finit désactivée, et une protection désactivée ne protège rien.
+    """
+    if dry_run:
+        return
+    if os.environ.get(LIVE_ENV) != LIVE_AVEU:
+        raise RuntimeError(
+            "Mode LIVE refusé : ce client enverrait de VRAIS ordres avec de l'argent réel. "
+            f"Ce dépôt est paper-only par défaut. Pour l'ouvrir volontairement, poser "
+            f"{LIVE_ENV}={LIVE_AVEU} dans l'environnement. "
+            "Aucune autre valeur n'est acceptée, et rien dans le dépôt ne la pose."
+        )
+
+
 class ExchangeClient:
     """Submission d'ordres avec dry_run flag.
 
@@ -91,6 +128,7 @@ class ExchangeClient:
         if not dry_run and exchange is None:
             raise ValueError(
                 "Exchange client (SDK authentifié) requis quand dry_run=False")
+        _exiger_l_aveu_live(dry_run)
         self.dry_run = dry_run
         self._info = info
         self._exchange = exchange

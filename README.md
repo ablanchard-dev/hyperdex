@@ -7,8 +7,14 @@ live engine on top of a strategy that only looks good in-sample.
 
 > **Status: paper-only / research.** This repository runs in paper / dry-run only —
 > there is no live trading runner. The order-submission client (`execution/exchange.py`)
-> contains a live branch, but it is not wired into any entry point and is not gated by a
-> runtime flag; the only runner (`scripts/p2/launch_paper.py`) forces `dry_run=True`.
+> contains a live branch, but it is not wired into any entry point; the only runner
+> (`scripts/p2/launch_paper.py`) forces `dry_run=True`. Since 18/09/2026 the live branch is
+> also **closed at runtime**: building a live client raises unless the environment carries
+> `HYPERDEX_ALLOW_LIVE` set to one exact sentence that nothing in this repo ever sets. The
+> check lives in the constructor — the one place every live path must pass through — so a
+> fresh script, a notebook or a stray `python -c` is refused too, not just the entry points
+> the static guard reads. Paper mode is never asked for anything: a protection that makes
+> research tedious ends up switched off.
 > The repo showcases the data pipeline, the faithful simulation engine, the risk layer
 > and the validation methodology — not a live system and not a claim of profitability.
 
