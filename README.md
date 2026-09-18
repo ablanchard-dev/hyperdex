@@ -15,6 +15,11 @@ live engine on top of a strategy that only looks good in-sample.
 > fresh script, a notebook or a stray `python -c` is refused too, not just the entry points
 > the static guard reads. Paper mode is never asked for anything: a protection that makes
 > research tedious ends up switched off.
+>
+> That constructor cannot be side-stepped either: a test enforces that `hyperliquid.exchange` —
+> the SDK module that can place orders — is imported by that one file and nowhere else, so no
+> script can reach the order API directly. Every other module imports `hyperliquid.info`, which
+> is read-only.
 > The repo showcases the data pipeline, the faithful simulation engine, the risk layer
 > and the validation methodology — not a live system and not a claim of profitability.
 
