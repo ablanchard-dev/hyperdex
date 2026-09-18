@@ -6,6 +6,12 @@
 # une API passerait au vert sur une machine connectee et casserait chez qui clone.
 # # Depot d'argent reel : un test qui atteindrait l'API Hyperliquid, meme en lecture, lierait la suite a un service distant et a ses limites de debit.
 #
+# ⚠️ CE CONFTEST NE COUVRE PAS TOUT LE DEPOT. La CI lance DEUX jobs : celui-ci
+# (`working-directory: backend`, 86 tests) et un second dans `backend/scripts/p2`
+# (`test_dsr_pbo.py`, 11 tests) — une seconde racine que `pytest` depuis `backend/` ne
+# collecte pas. Elle a son propre conftest, avec le meme blocage. Mesure du 18/09/2026 :
+# 97 tests au total passent hors-ligne.
+#
 # La boucle locale reste ouverte : la couverture et le debogueur s'en servent, et l'interdire
 # testerait pytest plutot que le produit.
 #
