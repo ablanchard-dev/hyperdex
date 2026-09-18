@@ -59,6 +59,115 @@ def _noeuds_sous_refus(arbre: ast.AST) -> set[int]:
     return dedans
 
 
+# ── La porte, pas le nom de la poignée. ──────────────────────────────────────────────────────
+#
+# ⚠️ 18/09/2026 — `constructions_live` ci-dessous reconnaît UN NOM DE CLASSE : `ExchangeClient`.
+# C'est une orthographe, pas une capacité. Le contournement n'est même pas de renommer la
+# classe : c'est de **sauter le wrapper**. L'en-tête d'`exchange.py` le dit lui-même —
+# `dry_run=False → Exchange.market_open() → vrai fill HL`. Qui obtient un `Exchange` du SDK
+# place des ordres, sans jamais écrire `ExchangeClient`, et sans passer par le garde-fou
+# d'exécution ajouté le même jour dans son constructeur.
+#
+# Mesure du 18/09/2026 : `hyperliquid.exchange` n'est importé QUE dans `exchange.py`, et
+# `market_open` n'y est appelé qu'une fois. Partout ailleurs, c'est `hyperliquid.info.Info` —
+# le client en LECTURE SEULE, qui ne peut rien envoyer. Aucun appel HTTP brut vers
+# `api.hyperliquid.xyz` non plus. Le dépôt est discipliné ; rien ne le tenait.
+#
+# 🔑 On garde donc la PORTE : on ne peut pas appeler `market_open` sans obtenir un `Exchange`,
+# et on ne l'obtient qu'en l'important. Une règle binaire, sans faux positif possible — et qui
+# vaut pour tout ce que le SDK sait faire de dangereux (`order`, `bulk_orders`, `usd_transfer`,
+# `withdraw_from_bridge`), y compris ce qu'il saura faire demain.
+MODULE_QUI_ORDONNE = "hyperliquid.exchange"
+
+# Le seul module dont c'est le métier. Relatif à `backend/`, en barres obliques.
+PORTES_AUTORISEES = {
+    "app/services/execution/exchange.py":
+        "le client d'exécution : c'est lui qui distingue paper et live, et depuis le 18/09 "
+        "son constructeur exige un aveu explicite dans l'environnement pour le mode live",
+}
+
+
+def _importe_le_module_qui_ordonne(arbre: ast.AST) -> list[str]:
+    """Les lignes où ce fichier obtient de quoi envoyer un ordre."""
+    lignes: list[str] = []
+    for n in ast.walk(arbre):
+        if isinstance(n, ast.ImportFrom) and (n.module or "").startswith(MODULE_QUI_ORDONNE):
+            lignes.append(f"{n.lineno} from {n.module} import …")
+        elif isinstance(n, ast.Import):
+            for a in n.names:
+                if a.name.startswith(MODULE_QUI_ORDONNE):
+                    lignes.append(f"{n.lineno} import {a.name}")
+    return lignes
+
+
+def portes_vers_l_api_d_ordres(racine: Path) -> list[str]:
+    """Les fichiers qui savent obtenir l'API d'ordres du SDK, hors porte autorisée."""
+    trouves: list[str] = []
+    for chemin in _sources(racine):
+        rel = chemin.relative_to(racine).as_posix()
+        if rel in PORTES_AUTORISEES:
+            continue
+        arbre = ast.parse(chemin.read_text(encoding="utf-8"), filename=str(chemin))
+        trouves += [f"{rel}:{ligne}" for ligne in _importe_le_module_qui_ordonne(arbre)]
+    return sorted(trouves)
+
+
+def test_une_seule_porte_mene_a_l_api_d_ordres_du_SDK():
+    """Le garde qui manquait : on ne place pas d'ordre sans obtenir un `Exchange`.
+
+    `constructions_live` ne voyait qu'un nom de classe ; celui-ci tient la capacité. Un fichier
+    qui importe `hyperliquid.exchange` peut envoyer des ordres, quel que soit le nom qu'il donne
+    à ses objets — et sans passer par le garde-fou d'exécution du constructeur.
+    """
+    hors_porte = portes_vers_l_api_d_ordres(RACINE)
+    assert not hors_porte, (
+        "Le README annonce paper-only. Ces fichiers peuvent obtenir l'API d'ordres du SDK "
+        "sans passer par le client d'exécution :\n  " + "\n  ".join(hors_porte)
+    )
+
+
+def test_la_porte_autorisee_existe_et_porte_sa_raison():
+    """Une permission qui ne vise plus rien est une permission oubliée."""
+    assert PORTES_AUTORISEES, "sans porte nommée, le test du dessus passerait en ne gardant rien"
+    for rel, raison in PORTES_AUTORISEES.items():
+        chemin = RACINE / rel
+        assert chemin.exists(), f"{rel} a disparu : la permission ne vise plus rien"
+        assert raison.strip(), f"{rel} est autorisé sans raison écrite"
+        # La raison invoquée tient sur une propriété vérifiable, pas sur ma parole.
+        assert "LIVE_ENV" in chemin.read_text(encoding="utf-8"), (
+            f"{rel} n'exige plus d'aveu explicite pour le mode live : la raison ne tient plus"
+        )
+
+
+@pytest.mark.parametrize(
+    "code",
+    [
+        "from hyperliquid.exchange import Exchange",
+        "from hyperliquid.exchange import Exchange as E",
+        "import hyperliquid.exchange",
+        "from hyperliquid.exchange.something import X",
+    ],
+)
+def test_le_garde_voit_chaque_facon_d_ouvrir_la_porte(code, tmp_path):
+    (tmp_path / "quelque_part.py").write_text(code + "\n", encoding="utf-8")
+    assert portes_vers_l_api_d_ordres(tmp_path), f"aveugle sur : {code}"
+
+
+@pytest.mark.parametrize(
+    "code,pourquoi",
+    [
+        ("from hyperliquid.info import Info", "lecture seule : Info n'envoie rien"),
+        ("from hyperliquid.utils import constants", "des constantes"),
+        ("from hyperliquid.utils.error import ClientError", "un type d'erreur"),
+        ("import hyperliquid", "le paquet seul n'ouvre aucune porte"),
+    ],
+)
+def test_le_garde_n_accuse_pas_la_lecture_seule(code, pourquoi, tmp_path):
+    """Le contrepoids : tout le dépôt lit le carnet d'ordres. Refuser ça le casserait."""
+    (tmp_path / "quelque_part.py").write_text(code + "\n", encoding="utf-8")
+    assert not portes_vers_l_api_d_ordres(tmp_path), f"faux positif ({pourquoi}) : {code}"
+
+
 def constructions_live(racine: Path) -> list[str]:
     """Les constructions d'ExchangeClient qui ne sont pas explicitement paper.
 
